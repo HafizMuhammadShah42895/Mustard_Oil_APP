@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>All Products</title>
+
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"/>
+  <!-- AOS Animation -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet"/>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
+
+  <style>
+    body {
+      background: #fdfdfd;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .product-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: none;
+      border-radius: 15px;
+    }
+
+    .product-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    }
+
+    .product-img {
+      height: 240px;
+      object-fit: cover;
+      border-top-left-radius: 15px;
+      border-top-right-radius: 15px;
+    }
+
+    .card-title {
+      font-weight: 600;
+    }
+
+    .card-text {
+      font-size: 0.95rem;
+      color: #555;
+    }
+
+    .price {
+      font-size: 1.1rem;
+    }
+
+    .back-button {
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container py-5">
+    <h2 class="text-center mb-5" data-aos="fade-down">🌿 All Our Natural Products</h2>
+
+    <div class="row">
+      {% for product in products %}
+      <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
+        <div class="card product-card shadow">
+          <img src="{{ url_for('static', filename='uploads/' + product.image_filename) }}" 
+               alt="{{ product.name }}" class="card-img-top product-img">
+          <div class="card-body">
+            <h5 class="card-title">{{ product.name }}</h5>
+            <p class="card-text">{{ product.description | truncate(120) }}</p>
+            <p class="text-success font-weight-bold price">Rs. {{ product.price }}</p>
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <div class="col-12 text-center">
+        <p>No products available at the moment.</p>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="text-center back-button">
+      <a href="{{ url_for('customer_bp.home') }}" class="btn btn-secondary px-4 py-2 rounded-pill shadow-sm">
+        ← Back to Home
+      </a>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init({ duration: 1000 });
+  </script>
+</body>
+</html>

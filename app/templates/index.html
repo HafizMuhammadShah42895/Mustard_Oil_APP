@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pure Mustard Oil</title>
+
+  <!-- SEO Meta Tags -->
+  <meta name="description"
+    content="Buy 100% pure, cold-pressed mustard oil. Ideal for cooking and skincare. Home delivery across Pakistan.">
+  <meta name="keywords" content="mustard oil, pure mustard oil, cold pressed oil, desi oil, mustard oil Pakistan">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png" />
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+
+  <!-- AOS CSS -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
+  <!-- Google Fonts Preconnect -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+
+  <style>
+    .product-image-wrapper {
+      width: 100%;
+      height: 220px;
+      overflow: hidden;
+      border-top-left-radius: 0.5rem;
+      border-top-right-radius: 0.5rem;
+    }
+
+    .product-image-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .product-image-wrapper img:hover {
+      transform: scale(1.05);
+    }
+
+    .card-body {
+      text-align: left;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+    }
+
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+      background-color: #ffc107;
+      padding: 10px;
+      border-radius: 50%;
+    }
+
+    .carousel-control-prev,
+    .carousel-control-next {
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .card:hover {
+      transform: scale(1.015);
+      transition: all 0.3s ease-in-out;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    body {
+      scroll-behavior: smooth;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    #hero {
+      background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+        url('static/2.png') no-repeat center center/cover;
+      color: white;
+      padding: 120px 20px;
+    }
+
+    #hero h1 {
+      font-size: 3.5rem;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .btn-warning,
+    .btn-success {
+      font-weight: bold;
+      padding: 10px 25px;
+      border-radius: 25px;
+      transition: transform 0.3s ease;
+    }
+
+    .btn-warning:hover,
+    .btn-success:hover {
+      transform: scale(1.05);
+    }
+
+    section {
+      padding: 60px 20px;
+    }
+
+    .card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .card img {
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .fa-2x {
+      margin-bottom: 10px;
+      color: #ffc107;
+      transition: transform 0.3s ease;
+    }
+
+    .fa-2x:hover {
+      transform: scale(1.3) rotate(10deg);
+    }
+
+    blockquote {
+      font-style: italic;
+      font-size: 1.2rem;
+      margin: 20px auto;
+      max-width: 600px;
+      color: #444;
+      border-left: 4px solid #ffc107;
+      padding-left: 15px;
+    }
+
+    footer {
+      background: #222;
+      color: white;
+      padding: 20px 0;
+    }
+
+    @media (max-width: 576px) {
+      #hero h1 {
+        font-size: 2.2rem;
+      }
+
+      .card img {
+        height: 150px;
+      }
+
+      .lead {
+        font-size: 1rem;
+      }
+    }
+
+    /* Floating WhatsApp Button */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 999;
+      background: #25D366;
+      color: white;
+      padding: 12px 16px;
+      border-radius: 50%;
+      font-size: 22px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Updated in the body: Hero Section -->
+  <section id="hero" class="text-center">
+    <div class="container">
+      <h1 data-aos="zoom-in-up">Nature in Every Drop</h1>
+      <p data-aos="fade-up" data-aos-delay="100">Cold-Pressed. Farm-Fresh. Delivered to Your Doorstep.</p>
+      <a href="#order" class="btn btn-warning" data-aos="fade-up" data-aos-delay="200">Experience the Purity</a>
+    </div>
+  </section>
+
+  <!-- Updated: About Section -->
+  <section id="about" class="bg-light text-center">
+    <div class="container">
+      <h2 data-aos="fade-up" class="mb-4">Rooted in Tradition, Bottled with Care</h2>
+      <div class="row">
+        <div class="col-md-6" data-aos="fade-right">
+          <img src="static/3.png" alt="Mustard Oil Process" class="img-fluid rounded shadow">
+        </div>
+        <div class="col-md-6 d-flex flex-column justify-content-center" data-aos="fade-left">
+          <p class="lead">
+            In the heart of rural Pakistan, we’ve revived an age-old tradition: <strong>pure, cold-pressed mustard
+              oil</strong> made without shortcuts or compromises. From handpicked seeds to small-batch extraction, every
+            bottle tells a story of care, quality, and authenticity.
+          </p>
+          <blockquote>“If it’s not pure, it’s not worth using.”</blockquote>
+          <ul class="list-unstyled mt-3 text-left">
+            <li><i class="fas fa-check text-success mr-2"></i> Cold-Pressed from Fresh Seeds</li>
+            <li><i class="fas fa-check text-success mr-2"></i> Retains Natural Aroma & Rich Flavor</li>
+            <li><i class="fas fa-check text-success mr-2"></i> Lab-Tested & Chemical-Free</li>
+            <li><i class="fas fa-check text-success mr-2"></i> Sourced Directly from Local Farmers</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Updated: Benefits Section -->
+  <section id="benefits" class="text-center bg-light">
+    <div class="container">
+      <h2 data-aos="fade-up">Why Our Oil is Loved</h2>
+      <p class="lead mb-5" data-aos="fade-up" data-aos-delay="100">It’s not just oil — it’s wellness, heritage, and
+        flavor in a bottle.</p>
+      <div class="row">
+        <div class="col-md-3 mb-4" data-aos="flip-left">
+          <div class="card h-100 border-0 shadow-sm benefit-card">
+            <div class="card-body">
+              <i class="fas fa-heartbeat fa-2x text-danger mb-3"></i>
+              <h5 class="card-title">Strengthens Immunity</h5>
+              <p class="card-text">Antioxidant-rich and loaded with Omega-3, it supports heart and immune health.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 mb-4" data-aos="flip-up">
+          <div class="card h-100 border-0 shadow-sm benefit-card">
+            <div class="card-body">
+              <i class="fas fa-spa fa-2x text-success mb-3"></i>
+              <h5 class="card-title">Nourishes Skin & Hair</h5>
+              <p class="card-text">A natural moisturizer for radiant skin and strong, healthy hair — no additives
+                needed.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 mb-4" data-aos="flip-down">
+          <div class="card h-100 border-0 shadow-sm benefit-card">
+            <div class="card-body">
+              <i class="fas fa-leaf fa-2x text-primary mb-3"></i>
+              <h5 class="card-title">100% Natural</h5>
+              <p class="card-text">Free from chemicals and preservatives — just mustard seeds and care.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 mb-4" data-aos="flip-right">
+          <div class="card h-100 border-0 shadow-sm benefit-card">
+            <div class="card-body">
+              <i class="fas fa-utensils fa-2x text-warning mb-3"></i>
+              <h5 class="card-title">Authentic Taste</h5>
+              <p class="card-text">Adds a warm, earthy touch to your desi dishes. Your grandma would approve!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+<!-- Optimized Products Section with Smooth Carousel -->
+<section id="products" class="text-center bg-white py-5">
+  <div class="container position-relative">
+    <h2 data-aos="fade-up" class="mb-3">Crafted for Your Kitchen & Care</h2>
+    <p class="lead mb-5" data-aos="fade-up" data-aos-delay="100">
+      A bottle that bridges tradition and trust — now explore all our offerings.
+    </p>
+
+    <div class="position-relative d-flex justify-content-center">
+      <!-- Carousel -->
+      <div id="productCarousel" class="carousel slide" data-ride="carousel" data-aos="zoom-in"
+           style="max-width: 700px; height: 480px; overflow: hidden;">
+        <div class="carousel-inner h-100">
+          {% for product in products %}
+          <div class="carousel-item h-100 {% if loop.first %}active{% endif %}">
+            <div class="card h-100 shadow-lg border-0 rounded-lg overflow-hidden">
+              <!-- Image Container -->
+              <div class="bg-light" style="height: 260px; overflow: hidden;">
+                <img src="{{ url_for('static', filename='uploads/' ~ product.image_filename) }}"
+                     class="w-100 h-100" style="object-fit: cover;" alt="{{ product.name }}">
+              </div>
+              <!-- Card Body -->
+              <div class="card-body px-4 py-3 d-flex flex-column justify-content-between">
+                <h5 class="card-title mb-2 font-weight-bold text-dark">{{ product.name }}</h5>
+                <p class="text-muted small mb-2">{{ product.description | truncate(100) }}</p>
+                <p class="text-success font-weight-bold mb-3">Rs. {{ product.price }}</p>
+                <a href="#order" class="btn btn-warning font-weight-bold px-4 py-2 rounded-pill shadow-sm">Order Now</a>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Left Control -->
+      <button class="btn btn-dark rounded-circle position-absolute shadow-sm"
+              type="button" data-target="#productCarousel" data-slide="prev"
+              style="top: 140px; left: 0; transform: translateX(-120%); width: 42px; height: 42px;">
+        <i class="fas fa-chevron-left text-warning"></i>
+      </button>
+
+      <!-- Right Control -->
+      <button class="btn btn-dark rounded-circle position-absolute shadow-sm"
+              type="button" data-target="#productCarousel" data-slide="next"
+              style="top: 140px; right: 0; transform: translateX(120%); width: 42px; height: 42px;">
+        <i class="fas fa-chevron-right text-warning"></i>
+      </button>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+
+
+  <!-- Updated Our Products Overview Section -->
+  <section id="our-products" class="text-center bg-white">
+    <div class="container">
+      <div data-aos="fade-up">
+        <h2 class="display-4 font-weight-bold">Our Pure Products</h2>
+        <p class="lead text-muted mt-3">Cold-pressed and chemical-free. See everything we offer, crafted with nature’s
+          goodness.</p>
+      </div>
+      <div class="mt-5" data-aos="flip-up">
+        <a href="{{ url_for('customer_bp.customer_products') }}" class="btn btn-warning btn-lg shadow-lg px-5 py-3">
+          <i class="fas fa-seedling mr-2"></i> View All Products
+        </a>
+      </div>
+    </div>
+  </section>
+  <!-- Updated: Testimonials -->
+  <section id="testimonials" class="text-center bg-light">
+    <div class="container">
+      <h2 data-aos="fade-up">Voices of Trust</h2>
+      <p class="lead mb-5" data-aos="fade-up" data-aos-delay="100">See how lives are changing — one bottle at a time.
+      </p>
+
+      <div class="row justify-content-center align-items-stretch">
+        <div class="col-md-5 mb-4 d-flex" data-aos="fade-right">
+          <div class="bg-white p-4 shadow rounded w-100 d-flex flex-column justify-content-between">
+            <div>
+              <i class="fas fa-quote-left fa-2x text-warning mb-3"></i>
+              <p class="mb-2">“This oil reminds me of my childhood in the village. The aroma, the taste — it’s real.
+                Nothing else comes close.”</p>
+            </div>
+            <div>
+              <hr>
+              <h6 class="font-weight-bold mb-0">Hafiz M.</h6>
+              <small class="text-muted">Customer from Lahore</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-5 mb-4 d-flex" data-aos="fade-left">
+          <div class="bg-white p-4 shadow rounded w-100 d-flex flex-column justify-content-between">
+            <div>
+              <i class="fas fa-quote-left fa-2x text-warning mb-3"></i>
+              <p class="mb-2">“We’ve switched completely to this oil — for cooking and even as a baby massage oil. Fast
+                delivery and exceptional quality.”</p>
+            </div>
+            <div>
+              <hr>
+              <h6 class="font-weight-bold mb-0">Muhammad S.</h6>
+              <small class="text-muted">Customer from Islamabad</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<!-- Contact Section -->
+ <!-- Contact Section -->
+<section id="contact" class="py-5 bg-light">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="display-4 font-weight-bold">Get in Touch</h2>
+      <p class="lead text-muted">We’d love to hear from you! Fill out the form below and we'll get back to you shortly.</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} text-center">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card border-0 shadow-lg rounded-lg">
+          <div class="card-body p-5">
+            <form method="POST" action="{{ url_for('customer_bp.contact') }}">
+              <div class="form-group">
+                <label for="name"><i class="fas fa-user text-primary mr-1"></i> Your Name</label>
+                <input type="text" class="form-control rounded-pill px-4 py-2" id="name" name="name" placeholder="John Doe" required>
+              </div>
+
+              <div class="form-group">
+                <label for="email"><i class="fas fa-envelope text-primary mr-1"></i> Your Email</label>
+                <input type="email" class="form-control rounded-pill px-4 py-2" id="email" name="email" placeholder="example@gmail.com" required>
+              </div>
+
+              <div class="form-group">
+                <label for="message"><i class="fas fa-comment-dots text-primary mr-1"></i> Your Message</label>
+                <textarea class="form-control rounded px-4 py-3" id="message" name="message" rows="5" placeholder="Write your message here..." required></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-block rounded-pill py-2 font-weight-bold shadow-sm">
+                <i class="fas fa-paper-plane mr-1"></i> Send Message
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- <section id="contact" class="bg-white">
+    <div class="container">
+        <h2 class="text-center mb-4">Contact Us</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <div class="card shadow p-4">
+            <form method="POST" action="{{ url_for('customer_bp.contact') }}">
+                <div class="form-group">
+                    <label for="name">Your Name:</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Your Email:</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Message:</label>
+                    <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">Send Message</button>
+            </form>
+        </div>
+    </div>
+</section> -->
+
+  <!-- Updated: Order Section -->
+  <section id="order" class="text-center text-white"
+    style="background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('static/2.png') center/cover no-repeat;">
+    <div class="container py-5">
+      <h2 data-aos="fade-up">Let Nature Knock at Your Door</h2>
+      <p data-aos="fade-up" class="lead">Simple steps to get started — call, text, or WhatsApp. We’ll do the rest.</p>
+      <div class="row mt-4 justify-content-center">
+        <div class="col-md-6" data-aos="fade-up">
+          <div class="bg-light text-dark p-4 rounded shadow">
+            <h4><i class="fas fa-phone-alt text-success mr-2"></i> Call or WhatsApp</h4>
+            <p class="mb-3">📞 <strong>+92 300 0000000</strong></p>
+            <h4><i class="fas fa-envelope text-warning mr-2"></i> Email</h4>
+            <p>📧 <strong>puremustardoil@example.com</strong></p>
+            <a href="https://wa.me/923450976304" class="btn btn-success btn-lg mt-3">
+              <i class="fab fa-whatsapp"></i> Order via WhatsApp
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- WhatsApp Floating Button -->
+  <a href="https://wa.me/923000000000" class="whatsapp-float" target="_blank" title="Chat on WhatsApp">
+    <i class="fab fa-whatsapp"></i>
+  </a>
+
+  <!-- Footer -->
+  <footer class="text-center">
+    <div class="container">
+      <p>&copy; 2025 Pure Mustard Oil. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init({ duration: 1000 });
+    $("a[href^='#']").on("click", function (e) {
+      e.preventDefault();
+      const target = $($(this).attr("href"));
+      if (target.length) {
+        $('html, body').animate({ scrollTop: target.offset().top }, 600);
+      }
+    });
+  </script>
+</body>
+
+</html>
