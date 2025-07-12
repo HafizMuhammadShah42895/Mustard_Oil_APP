@@ -16,9 +16,16 @@ def init_mail(app):
 
 def create_app():
     app = Flask(__name__)
+    
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:muhammad%40555@localhost/mustard_oil'
+
+    
+    # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:muhammad%40555@localhost/mustard_oil'
+
+
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://422483_moa:muhammad%40555@mysql-hafizmuhammadshah.alwaysdata.net/hafizmuhammadshah_moa'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
     app.config['UPLOAD_FOLDER'] = 'app/static/uploads'
     app.config['SECRET_KEY'] = 'your_secret_key'
 
