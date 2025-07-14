@@ -6,52 +6,60 @@
 
   <!-- Bootstrap -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
-
   <!-- AOS Animation -->
   <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css"/>
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
   <style>
     body {
-      background: #f1f5f9;
+      background: linear-gradient(to right, #e6f0ff, #fdfdfd);
       font-family: 'Segoe UI', sans-serif;
     }
 
     .container {
       background: #ffffff;
-      border-radius: 12px;
+      border-radius: 16px;
       padding: 40px;
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+      margin-top: 40px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
     }
 
     h2 {
-      font-weight: 600;
+      font-weight: 700;
       text-align: center;
-      margin-bottom: 30px;
-      color: #333;
+      margin-bottom: 35px;
+      color: #007bff;
     }
 
-    .btn-primary {
+    .btn-primary, .btn-warning, .btn-danger, .btn-info {
       border-radius: 25px;
       font-weight: 500;
-      padding: 8px 20px;
+      padding: 8px 18px;
+      transition: 0.3s ease-in-out;
+    }
+
+    .btn-primary:hover, .btn-warning:hover, .btn-danger:hover, .btn-info:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
     }
 
     .table th {
       background-color: #343a40;
       color: #fff;
+      text-align: center;
     }
 
     .table td {
       vertical-align: middle;
+      text-align: center;
     }
 
     .btn-sm {
-      border-radius: 20px;
+      border-radius: 25px;
       font-size: 0.8rem;
-      font-weight: 500;
     }
 
     .img-thumbnail {
@@ -62,8 +70,22 @@
     }
 
     tr:hover {
-      background-color: #f8f9fa;
+      background-color: #f1faff;
       transition: 0.3s ease-in-out;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 5px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .top-buttons {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
     }
 
     @media (max-width: 576px) {
@@ -71,17 +93,23 @@
         padding: 20px;
       }
 
-      .table th, .table td {
-        font-size: 0.85rem;
+      .top-buttons {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
       }
     }
   </style>
 </head>
 <body>
 
-<div class="container mt-5" data-aos="fade-up">
+<div class="container animate__animated animate__fadeInUp" data-aos="fade-up">
   <h2><i class="fas fa-boxes"></i> All Products</h2>
-  <div class="text-right mb-3">
+
+  <div class="top-buttons">
+    <a href="{{ url_for('admin_bp.admin_dashboard') }}" class="btn btn-info">
+      <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
     <a href="{{ url_for('admin_bp.add_product') }}" class="btn btn-primary">
       <i class="fas fa-plus-circle"></i> Add New Product
     </a>
@@ -110,16 +138,16 @@
           <td>
             <img src="{{ url_for('static', filename='uploads/' + product.image_filename) }}" alt="Image" class="img-thumbnail">
           </td>
-          <td>
-            <a href="{{ url_for('admin_bp.edit_product', id=product.id) }}" class="btn btn-sm btn-warning mb-1">
+          <td class="action-buttons">
+            <a href="{{ url_for('admin_bp.edit_product', id=product.id) }}" class="btn btn-sm btn-warning">
               <i class="fas fa-edit"></i> Edit
             </a>
-            <form method="POST" action="{{ url_for('admin_bp.delete_product', id=product.id) }}"
+            <!-- <form method="POST" action="{{ url_for('admin_bp.delete_product', id=product.id) }}"
                   onsubmit="return confirm('Are you sure?')" style="display:inline-block;">
               <button type="submit" class="btn btn-sm btn-danger">
                 <i class="fas fa-trash-alt"></i> Delete
               </button>
-            </form>
+            </form> -->
           </td>
         </tr>
         {% endfor %}
@@ -136,7 +164,8 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
-  AOS.init({ duration: 800 });
+  AOS.init({ duration: 1000 });
 </script>
 </body>
 </html>
+

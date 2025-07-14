@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Registered Customers</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- AOS Animation -->
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css"/>
+
+    <!-- Animate.css for headline -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+    <style>
+        body {
+            background: linear-gradient(to right, #f3f9ff, #ffffff);
+            font-family: 'Segoe UI', sans-serif;
+            padding: 40px 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            font-weight: 700;
+            font-size: 28px;
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background-color: #007bff;
+            color: white;
+        }
+
+        th, td {
+            text-align: center;
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        tbody tr:hover {
+            background-color: #f1f9ff;
+            transition: 0.3s;
+        }
+
+        @media (max-width: 768px) {
+            th, td {
+                font-size: 14px;
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container animate__animated animate__fadeInDown" data-aos="zoom-in">
+        <h1 class="animate__animated animate__fadeInUp">All Registered Customers</h1>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Customer ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Address</th>
+                        <th>CNIC</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for customer in customers %}
+                    <tr data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
+                        <td>{{ customer.CustomerID }}</td>
+                        <td>{{ customer.Name }}</td>
+                        <td>{{ customer.Email }}</td>
+                        <td>{{ customer.Phone }}</td>
+                        <td>{{ customer.Address }}</td>
+                        <td>{{ customer.Cnic }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 1000, once: true });
+    </script>
+</body>
+</html>

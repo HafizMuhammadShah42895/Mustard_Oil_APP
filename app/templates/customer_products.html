@@ -13,7 +13,7 @@
 
   <style>
     body {
-      background: #fdfdfd;
+      background: #F5F5DC;
       font-family: 'Segoe UI', sans-serif;
     }
 
@@ -21,6 +21,7 @@
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       border: none;
       border-radius: 15px;
+      background: #fff;
     }
 
     .product-card:hover {
@@ -37,6 +38,7 @@
 
     .card-title {
       font-weight: 600;
+      color: #4CAF50;
     }
 
     .card-text {
@@ -46,28 +48,77 @@
 
     .price {
       font-size: 1.1rem;
+      color: #6B8E23;
+    }
+
+    .btn-add-to-cart {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      font-weight: bold;
+      border-radius: 25px;
+      padding: 10px 20px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn-add-to-cart:hover {
+      background-color: #6B8E23;
+      transform: scale(1.05);
+      box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
     }
 
     .back-button {
       margin-top: 30px;
+    }
+
+    .section-heading {
+      color: #4CAF50;
+    }
+
+    .search-box {
+      max-width: 500px;
+      margin: 0 auto 40px;
+    }
+
+    .pagination .page-item.active .page-link {
+      background-color: #4CAF50;
+      border-color: #4CAF50;
     }
   </style>
 </head>
 <body>
 
   <div class="container py-5">
-    <h2 class="text-center mb-5" data-aos="fade-down">🌿 All Our Natural Products</h2>
+    <h2 class="text-center mb-4 section-heading" data-aos="fade-down">🌿 All Our Natural Products</h2>
 
+    <!-- 🔍 Search Box -->
+    <form method="get" action="{{ url_for('customer_bp.customer_products') }}" class="search-box">
+      <div class="input-group">
+        <input type="text" name="search" class="form-control" placeholder="Search products..." value="{{ search }}">
+        <div class="input-group-append">
+          <button class="btn btn-success" type="submit"><i class="fas fa-search"></i></button>
+        </div>
+      </div>
+    </form>
+
+    <!-- 🛒 Product Grid -->
     <div class="row">
       {% for product in products %}
       <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
         <div class="card product-card shadow">
           <img src="{{ url_for('static', filename='uploads/' + product.image_filename) }}" 
                alt="{{ product.name }}" class="card-img-top product-img">
-          <div class="card-body">
+          <div class="card-body text-center d-flex flex-column justify-content-between">
             <h5 class="card-title">{{ product.name }}</h5>
             <p class="card-text">{{ product.description | truncate(120) }}</p>
-            <p class="text-success font-weight-bold price">Rs. {{ product.price }}</p>
+            <p class="price">Rs. {{ product.price }}</p>
+
+            <!-- Add to Cart Button -->
+            <form method="POST" action="{{ url_for('customer_bp.add_to_cart', product_id=product.id) }}">
+              <button type="submit" class="btn btn-add-to-cart mt-2">
+                <i class="fas fa-cart-plus"></i> Add to Cart
+              </button>
+            </form>
           </div>
         </div>
       </div>
@@ -78,6 +129,44 @@
       {% endfor %}
     </div>
 
+    <!-- 📄 Pagination -->
+    {% if pagination.pages > 1 %}
+    <nav aria-label="Page navigation" class="mt-4">
+      <ul class="pagination justify-content-center">
+        {% if pagination.has_prev %}
+          <li class="page-item">
+            <a class="page-link" href="{{ url_for('customer_bp.customer_products', page=pagination.prev_num, search=search) }}">
+              &laquo; Previous
+            </a>
+          </li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">&laquo; Previous</span></li>
+        {% endif %}
+
+        {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+          {% if p %}
+            <li class="page-item {% if p == pagination.page %}active{% endif %}">
+              <a class="page-link" href="{{ url_for('customer_bp.customer_products', page=p, search=search) }}">{{ p }}</a>
+            </li>
+          {% else %}
+            <li class="page-item disabled"><span class="page-link">…</span></li>
+          {% endif %}
+        {% endfor %}
+
+        {% if pagination.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="{{ url_for('customer_bp.customer_products', page=pagination.next_num, search=search) }}">
+              Next &raquo;
+            </a>
+          </li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">Next &raquo;</span></li>
+        {% endif %}
+      </ul>
+    </nav>
+    {% endif %}
+
+    <!-- 🔙 Back Button -->
     <div class="text-center back-button">
       <a href="{{ url_for('customer_bp.home') }}" class="btn btn-secondary px-4 py-2 rounded-pill shadow-sm">
         ← Back to Home

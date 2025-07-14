@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Contact Messages</title>
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- AOS Animation -->
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css"/>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
+
+  <style>
+    body {
+      background: #f2f6fc;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .container {
+      background: #fff;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      margin-top: 40px;
+    }
+
+    h2 {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 30px;
+    }
+
+    .message-card {
+      border-left: 5px solid #007bff;
+      margin-bottom: 20px;
+      background: #f9fbff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 5px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .message-card h5 {
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .message-card small {
+      color: #666;
+    }
+
+    .message-card p {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container" data-aos="fade-up">
+  <h2><i class="fas fa-envelope"></i> Contact Messages</h2>
+
+  {% if messages %}
+    {% for msg in messages %}
+      <div class="message-card" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
+        <h5><i class="fas fa-user"></i> {{ msg.name }}</h5>
+        <small><i class="fas fa-envelope"></i> {{ msg.email }} | {{ msg.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+        <p>{{ msg.message }}</p>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="text-muted">No messages received yet.</p>
+  {% endif %}
+</div>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+  AOS.init({ duration: 1000 });
+</script>
+</body>
+</html>

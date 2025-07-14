@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Management</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- AOS Animation -->
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css"/>
+
+    <!-- Animate.css for heading -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+    <style>
+        body {
+            background: linear-gradient(to right, #f0f4ff, #ffffff);
+            font-family: 'Segoe UI', sans-serif;
+            padding: 40px 20px;
+        }
+
+        h2 {
+            font-weight: 700;
+            color: #007bff;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .tabs {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        a.tab {
+            margin: 5px;
+            padding: 10px 20px;
+            text-decoration: none;
+            background-color: #e9ecef;
+            color: #333;
+            border-radius: 25px;
+            display: inline-block;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        a.tab.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        a.tab:hover {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .table-responsive {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        table {
+            margin-bottom: 0;
+        }
+
+        thead {
+            background-color: #007bff;
+            color: white;
+        }
+
+        th, td {
+            text-align: center;
+            vertical-align: middle !important;
+        }
+
+        tbody tr:hover {
+            background-color: #f4f9ff;
+        }
+
+        button {
+            padding: 5px 12px;
+            background-color: #28a745;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .no-orders {
+            text-align: center;
+            margin-top: 20px;
+            color: #888;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container animate__animated animate__fadeIn">
+        <h2 class="animate__animated animate__fadeInDown">Order Management</h2>
+
+        <!-- Status Tabs -->
+        <div class="tabs" data-aos="zoom-in">
+            {% for status in ['All', 'Pending', 'Delivery', 'Completed', 'Cancelled'] %}
+                <a class="tab {% if current_status == status %}active{% endif %}"
+                   href="{{ url_for('admin_bp.view_orders', status=status) }}">
+                    {{ status }}
+                </a>
+            {% endfor %}
+        </div>
+
+        <!-- Orders Table -->
+        <div class="table-responsive" data-aos="fade-up">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer Name</th>
+                        <th>Email</th>
+                        <th>Address</th>
+                        <th>Phone</th>
+                        <th>Total Price</th>
+                        <th>Status</th>
+                        <th>Created At</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
+                        <td>{{ order.id }}</td>
+                        <td>{{ order.name }}</td>
+                        <td>{{ order.email }}</td>
+                        <td>{{ order.address }}</td>
+                        <td>{{ order.phone }}</td>
+                        <td>{{ order.total_price }}</td>
+                        <td>{{ order.status }}</td>
+                        <td>{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>
+                            {% if order.status == 'Pending' %}
+                                <form action="{{ url_for('admin_bp.mark_as_delivery', order_id=order.id) }}" method="post">
+                                    <button type="submit">Mark as Delivery</button>
+                                </form>
+                            {% elif order.status == 'Delivery' %}
+                                <form action="{{ url_for('admin_bp.mark_as_completed', order_id=order.id) }}" method="post">
+                                    <button type="submit">Mark as Completed</button>
+                                </form>
+                            {% else %}
+                                <span>—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if orders|length == 0 %}
+            <p class="no-orders animate__animated animate__fadeInUp">No orders in this category.</p>
+        {% endif %}
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 1000, once: true });
+    </script>
+</body>
+</html>
