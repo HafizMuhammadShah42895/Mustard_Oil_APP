@@ -171,18 +171,18 @@ def edit_product(id):
 
 
 
-# # Delete Product
-# @admin_bp.route('/admin/delete-product/<int:id>', methods=['POST'])
-# def delete_product(id):
-#     if 'admin_id' not in session:
-#         flash("Please log in first.")
-#         return redirect(url_for('admin_bp.admin_login'))
+# Delete Product
+@admin_bp.route('/admin/delete-product/<int:id>', methods=['POST'])
+def delete_product(id):
+    if 'admin_id' not in session:
+        flash("Please log in first.")
+        return redirect(url_for('admin_bp.admin_login'))
 
-#     product = Product.query.get_or_404(id)
-#     db.session.delete(product)
-#     db.session.commit()
-#     flash("Product deleted successfully.")
-#     return redirect(url_for('admin_bp.all_products'))
+    product = Product.query.get_or_404(id)
+    db.session.delete(product)
+    db.session.commit()
+    flash("Product deleted successfully.")
+    return redirect(url_for('admin_bp.all_products'))
 
 
 
