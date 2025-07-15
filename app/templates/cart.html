@@ -1,190 +1,159 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Your Cart</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!-- Bootstrap -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <!-- AOS Animation -->
-  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
 
   <style>
     body {
-      background-color: #F5F5DC;
+      background-color: #f8f9fa;
       font-family: 'Segoe UI', sans-serif;
     }
 
     h2 {
-      color: #4CAF50;
+      color: #198754;
       font-weight: bold;
+      margin-bottom: 1rem;
     }
 
-    .table thead {
-      background-color: #6B8E23;
-      color: white;
+    .cart-card {
+      background: #fff;
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      margin-bottom: 15px;
+      padding: 1rem;
+      transition: transform 0.2s ease-in-out;
     }
 
-    .product-img {
-      width: 70px;
-      height: 70px;
+    .cart-card:hover {
+      transform: scale(1.01);
+    }
+
+    .cart-card img {
+      width: 100%;
+      max-width: 100px;
+      border-radius: 8px;
       object-fit: cover;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-
-    .btn-primary {
-      background-color: #4CAF50;
-      border: none;
-    }
-
-    .btn-primary:hover {
-      background-color: #6B8E23;
-    }
-
-    .btn-success {
-      background-color: #9ACD32;
-      border: none;
-    }
-
-    .btn-success:hover {
-      background-color: #6B8E23;
-    }
-
-    .btn-danger {
-      background-color: #d9534f;
-    }
-
-    .btn-secondary {
-      background-color: #cfd8c2;
-      color: #333;
-      border: none;
-    }
-
-    .btn {
-      padding: 8px 16px;
-      font-size: 0.9rem;
-      border-radius: 25px;
-    }
-
-    .table-bordered {
-      background-color: white;
-      border-radius: 8px;
-      overflow: hidden;
+      border: 1px solid #dee2e6;
     }
 
     .cart-actions {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      align-items: center;
+      gap: 8px;
     }
 
-    @media (min-width: 768px) {
-      .cart-actions {
-        flex-direction: row;
-        justify-content: center;
+    .btn-sm {
+      border-radius: 30px;
+      font-size: 0.85rem;
+      padding: 6px 12px;
+    }
+
+    .quantity-input {
+      max-width: 70px;
+      padding: 2px 8px;
+    }
+
+    .text-muted small {
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 576px) {
+      .cart-card {
+        padding: 0.75rem;
+        margin-bottom: 12px;
       }
-    }
 
-    .alert {
-      border-radius: 6px;
-    }
+      .cart-card img {
+        max-width: 80px;
+      }
 
-    .quantity-form input {
-      width: 70px;
+      .cart-actions {
+        gap: 6px;
+      }
+
+      .quantity-input {
+        max-width: 60px;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+      }
+
+      .btn {
+        font-size: 0.85rem;
+      }
     }
   </style>
 </head>
-<body class="container py-5" data-aos="fade-in">
 
-  <h2 class="mb-4 text-center" data-aos="fade-down">🛒 Your Shopping Cart</h2>
+<body class="container py-3">
+
+  <h2 class="text-center fade show">🛒 Your Shopping Cart</h2>
 
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% for category, message in messages %}
-      <div class="alert alert-{{ category }} text-center" data-aos="zoom-in">{{ message }}</div>
+      <div class="alert alert-{{ category }} text-center fade show">{{ message }}</div>
     {% endfor %}
   {% endwith %}
 
   {% if cart_items %}
   <!-- Clear Cart Button -->
-  <div class="text-end mb-3" data-aos="fade-up">
+  <div class="text-end mb-3 fade show">
     <form method="POST" action="{{ url_for('customer_bp.clear_cart') }}">
-      <button type="submit" class="btn btn-danger"
+      <button type="submit" class="btn btn-danger btn-sm"
         onclick="return confirm('Are you sure you want to remove all items from your cart?')">
         <i class="fas fa-trash-alt"></i> Clear Cart
       </button>
     </form>
   </div>
 
-  <!-- Cart Table -->
-  <div class="table-responsive" data-aos="fade-up" data-aos-delay="100">
-    <table class="table table-bordered align-middle shadow-sm">
-      <thead>
-        <tr>
-          <th>Product</th>
-          <th>Image</th>
-          <th>Price</th>
-          <th>Qty</th>
-          <th>Total</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for item in cart_items %}
-        <tr data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
-          <td>{{ item.product.name }}</td>
-          <td>
-            <img src="{{ url_for('static', filename='uploads/' + item.product.image_filename) }}"
-                 alt="{{ item.product.name }}" class="product-img">
-          </td>
-          <td>Rs. {{ item.product.price }}</td>
-          <td>
-            <form method="POST" action="{{ url_for('customer_bp.update_cart', item_id=item.id) }}" class="d-flex align-items-center quantity-form">
-              <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="form-control me-2">
-              <button type="submit" class="btn btn-sm btn-primary">Update</button>
-            </form>
-          </td>
-          <td>Rs. {{ item.product.price * item.quantity }}</td>
-          <td>
-            <div class="cart-actions">
-              <!-- Remove -->
-              <form method="POST" action="{{ url_for('customer_bp.remove_from_cart', item_id=item.id) }}">
-                <button class="btn btn-sm btn-danger" onclick="return confirm('Remove item?')">Delete</button>
-              </form>
+  <!-- Responsive Card View -->
+  {% for item in cart_items %}
+  <div class="cart-card row align-items-center fade show">
+    <div class="col-4 col-md-2">
+      <img src="{{ url_for('static', filename='uploads/' + item.product.image_filename) }}" alt="{{ item.product.name }}">
+    </div>
+    <div class="col-8 col-md-4">
+      <h6 class="mb-1">{{ item.product.name }}</h6>
+      <p class="mb-1 text-muted"><small>Price: Rs. {{ item.product.price }}</small></p>
+      <p class="mb-2 text-muted"><small>Total: Rs. {{ item.product.price * item.quantity }}</small></p>
+    </div>
+    <div class="col-12 col-md-6 mt-2 mt-md-0">
+      <form method="POST" action="{{ url_for('customer_bp.update_cart', item_id=item.id) }}" class="d-flex align-items-center mb-2">
+        <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="form-control quantity-input me-2">
+        <button type="submit" class="btn btn-primary btn-sm">Update</button>
+      </form>
 
-              <!-- Order -->
-              <a href="{{ url_for('customer_bp.place_order', item_id=item.id) }}" class="btn btn-sm btn-success">
-                Order Now
-              </a>
-            </div>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+      <div class="cart-actions d-md-flex gap-2">
+        <form method="POST" action="{{ url_for('customer_bp.remove_from_cart', item_id=item.id) }}">
+          <button class="btn btn-danger btn-sm w-100" onclick="return confirm('Remove item?')">Delete</button>
+        </form>
+        <a href="{{ url_for('customer_bp.place_order', item_id=item.id) }}" class="btn btn-success btn-sm w-100">Order Now</a>
+      </div>
+    </div>
   </div>
+  {% endfor %}
 
   {% else %}
-    <p class="text-muted text-center" data-aos="fade-up">Your cart is empty.</p>
+    <p class="text-muted text-center fade show">Your cart is empty.</p>
   {% endif %}
 
   <!-- Continue Shopping -->
-  <div class="text-center mt-4" data-aos="fade-up" data-aos-delay="200">
-    <a href="{{ url_for('customer_bp.customer_products') }}" class="btn btn-secondary px-4 py-2 rounded-pill">
+  <div class="text-center mt-4 fade show">
+    <a href="{{ url_for('customer_bp.customer_products') }}" class="btn btn-secondary px-4 py-2">
       ← Continue Shopping
     </a>
   </div>
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  <script>
-    AOS.init({ duration: 1000 });
-  </script>
 </body>
 </html>

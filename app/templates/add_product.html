@@ -1,207 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Add New Product</title>
 
-  <!-- Bootstrap -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
-  
+  <!-- Bootstrap 5 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <!-- Font Awesome -->
-  <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
-
-  <!-- Animate.css (optional) -->
-  <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
 
   <style>
     body {
-      background: linear-gradient(to right, #d9e7ff, #fefefe);
-      font-family: 'Segoe UI', sans-serif;
-      padding-top: 60px;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to bottom, #e3f2fd, #ffffff);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
     }
 
-    .form-container {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(4px);
-      border-radius: 20px;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-      padding: 45px;
-      max-width: 700px;
-      margin: auto;
+    .form-wrapper {
+      width: 100%;
+      max-width: 420px;
+      background: #fff;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
     }
 
-    .form-container h2 {
-      font-weight: 700;
-      margin-bottom: 30px;
-      text-align: center;
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
       color: #007bff;
+      text-align: center;
+      margin-bottom: 20px;
     }
 
-    .form-group label {
+    label {
       font-weight: 500;
-      margin-bottom: 6px;
+      margin-bottom: 5px;
     }
 
     .form-control,
-    .custom-file-input {
+    .form-select {
       border-radius: 10px;
-      transition: 0.3s ease-in-out;
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+      font-size: 0.95rem;
     }
 
-    .form-control:focus,
-    .custom-file-input:focus {
-      box-shadow: 0 0 0 0.15rem rgba(0, 123, 255, 0.25);
+    .form-control:focus {
+      box-shadow: 0 0 0 0.15rem rgba(0, 123, 255, 0.3);
     }
 
-    .custom-file-label {
-      border-radius: 10px;
-    }
-
-    .btn-rounded {
-      border-radius: 25px;
-      padding: 10px 24px;
+    .btn {
+      border-radius: 30px;
+      padding: 10px 18px;
       font-weight: 500;
-      transition: all 0.3s ease-in-out;
     }
 
-    .btn-rounded:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+    .btn + .btn {
+      margin-left: 10px;
     }
 
-    .btn-primary   { background-color: #007bff; border: none; }
-    .btn-secondary { background-color: #6c757d; border: none; }
-    .btn-warning   { background-color: #ffc107; border: none; color: #333; }
+    .form-text {
+      font-size: 0.85rem;
+    }
 
-    .is-invalid { border-color: #dc3545 !important; }
+    .invalid-feedback {
+      font-size: 0.85rem;
+    }
 
     @media (max-width: 576px) {
-      .form-container { padding: 30px 20px; }
+      .form-wrapper {
+        padding: 20px 15px;
+        margin: 0 5px;
+      }
+
+      .btn-group {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .btn + .btn {
+        margin-left: 0;
+      }
     }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <div class="form-container animate__animated animate__fadeInUp">
-    <h2 class="animate__animated animate__fadeInDown">
-      <i class="fas fa-box-open"></i> Add New Product
-    </h2>
-
-    <!-- Form -->
-    <form method="POST" enctype="multipart/form-data">
-      <!-- Product Name -->
-      <div class="form-group">
-        <label><i class="fas fa-tag"></i> Product Name</label>
-        <input type="text" name="name" class="form-control"
-               placeholder="Enter product name" required>
+  <div class="form-wrapper">
+    <h2><i class="fas fa-box-open me-2"></i>Add Product</h2>
+    <form method="POST" enctype="multipart/form-data" novalidate>
+      
+      <div class="mb-3">
+        <label for="name"><i class="fas fa-tag me-1"></i>Product Name</label>
+        <input type="text" class="form-control" id="name" name="name" placeholder="e.g. Organic Honey" required>
         <div class="invalid-feedback" id="name-error"></div>
       </div>
 
-      <!-- Price -->
-      <div class="form-group">
-        <label><i class="fas fa-rupee-sign"></i> Price (₨)</label>
-        <input type="number" step="0.01" name="price" class="form-control"
-               placeholder="e.g., 600" required>
+      <div class="mb-3">
+        <label for="price"><i class="fas fa-rupee-sign me-1"></i>Price</label>
+        <input type="number" step="0.01" class="form-control" id="price" name="price" placeholder="e.g. 450" required>
         <div class="invalid-feedback" id="price-error"></div>
       </div>
 
-      <!-- Description -->
-      <div class="form-group">
-        <label><i class="fas fa-align-left"></i> Description</label>
-        <textarea name="description" class="form-control" rows="4"
-                  placeholder="Enter product details" required></textarea>
+      <div class="mb-3">
+        <label for="description"><i class="fas fa-align-left me-1"></i>Description</label>
+        <textarea class="form-control" id="description" name="description" rows="3" placeholder="Short product description..." required></textarea>
         <div class="invalid-feedback" id="desc-error"></div>
       </div>
 
-      <!-- Image -->
-      <div class="form-group">
-        <label><i class="fas fa-image"></i> Product Image</label>
-        <div class="custom-file">
-          <input type="file" name="image" class="custom-file-input"
-                 id="productImage" required>
-          <label class="custom-file-label" for="productImage">Choose file</label>
-        </div>
+      <div class="mb-3">
+        <label for="image"><i class="fas fa-image me-1"></i>Product Image</label>
+        <input type="file" class="form-control" id="image" name="image" accept=".jpg,.jpeg,.png,.gif" required>
         <div class="invalid-feedback" id="image-error"></div>
       </div>
 
-      <!-- Buttons -->
-      <div class="text-center mt-4">
-        <button type="submit" class="btn btn-primary btn-rounded mr-2">
-          <i class="fas fa-plus-circle"></i> Add Product
-        </button>
-        <a href="{{ url_for('admin_bp.admin_dashboard') }}"
-           class="btn btn-secondary btn-rounded mr-2">
-          <i class="fas fa-arrow-left"></i> Back
-        </a>
-        <button type="reset" class="btn btn-warning btn-rounded">
-          <i class="fas fa-undo-alt"></i> Reset
-        </button>
+      <div class="d-flex justify-content-center flex-wrap btn-group mt-4">
+        <button type="submit" class="btn btn-primary"><i class="fas fa-plus-circle me-1"></i>Add</button>
+        <a href="{{ url_for('admin_bp.admin_dashboard') }}" class="btn btn-secondary"><i class="fas fa-arrow-left me-1"></i>Back</a>
+        <button type="reset" class="btn btn-warning text-dark"><i class="fas fa-undo-alt me-1"></i>Reset</button>
       </div>
     </form>
   </div>
-</div>
 
-<!-- Scripts -->
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- JS -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    $('form').on('submit', function (e) {
+      let valid = true;
 
-<script>
-  // Show selected filename
-  $(".custom-file-input").on("change", function () {
-    const fileName = $(this).val().split("\\").pop();
-    $(this).next(".custom-file-label").addClass("selected").html(fileName);
-  });
+      // Clear old errors
+      $('.form-control').removeClass('is-invalid');
+      $('.invalid-feedback').text('');
 
-  // Validation on submit
-  $("form").on("submit", function (e) {
-    let valid = true;
+      const name = $('#name').val().trim();
+      const price = parseFloat($('#price').val());
+      const desc = $('#description').val().trim();
+      const file = $('#image').val();
 
-    // Clear previous errors
-    $(".is-invalid").removeClass("is-invalid");
-    $(".invalid-feedback").text("");
+      if (name.length === 0 || name.length > 25) {
+        $('#name').addClass('is-invalid');
+        $('#name-error').text('Product name must be 1–25 characters.');
+        valid = false;
+      }
 
-    const name = $("input[name='name']").val().trim();
-    const price = parseFloat($("input[name='price']").val());
-    const desc = $("textarea[name='description']").val().trim();
-    const file = $("input[name='image']").val();
+      if (isNaN(price) || price <= 0) {
+        $('#price').addClass('is-invalid');
+        $('#price-error').text('Price must be greater than 0.');
+        valid = false;
+      }
 
-    // 1) Name validation
-    if (name.length === 0 || name.length > 25) {
-      $("input[name='name']").addClass("is-invalid");
-      $("#name-error").text("Product name must be 1‑25 characters.");
-      valid = false;
-    }
+      if (desc.length === 0 || desc.length > 200) {
+        $('#description').addClass('is-invalid');
+        $('#desc-error').text('Description must be 1–200 characters.');
+        valid = false;
+      }
 
-    // 2) Price validation
-    if (isNaN(price) || price <= 0) {
-      $("input[name='price']").addClass("is-invalid");
-      $("#price-error").text("Enter a valid price greater than 0.");
-      valid = false;
-    }
+      if (!/\.(jpg|jpeg|png|gif)$/i.test(file)) {
+        $('#image').addClass('is-invalid');
+        $('#image-error').text('Upload a valid image file.');
+        valid = false;
+      }
 
-    // 3) Description validation
-    if (desc.length === 0 || desc.length > 200) {
-      $("textarea[name='description']").addClass("is-invalid");
-      $("#desc-error").text("Description must be 1‑200 characters.");
-      valid = false;
-    }
-
-    // 4) Image validation
-    if (file.length === 0 || !/\.(jpg|jpeg|png|gif)$/i.test(file)) {
-      $("input[name='image']").addClass("is-invalid");
-      $("#image-error").text("Upload a valid image file (jpg, jpeg, png, gif).");
-      valid = false;
-    }
-
-    // Cancel submit if invalid
-    if (!valid) {
-      e.preventDefault();
-    }
-  });
-</script>
+      if (!valid) e.preventDefault();
+    });
+  </script>
 </body>
 </html>

@@ -1,231 +1,223 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Customer Signup</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <!-- AOS CSS -->
-    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
-    <!-- Animate.css -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Customer Signup</title>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <style>
-        body {
-            background: linear-gradient(to right, #F5F5DC, #E8F5E9); /* Beige gradient */
-            font-family: 'Segoe UI', sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-        }
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
-        .signup-form {
-            background-color: white;
-            border-radius: 18px;
-            padding: 45px 35px;
-            max-width: 500px;
-            width: 100%;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-            border-left: 6px solid #6B8E23; /* Olive accent border */
-            transition: all 0.4s ease-in-out;
-        }
+  <style>
+    body {
+      background: linear-gradient(to right, #f5f5dc, #e8f5e9);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 1rem;
+    }
 
-        .signup-form:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.2);
-        }
+    .signup-box {
+      background-color: #fff;
+      border-left: 5px solid #4CAF50;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      padding: 1.8rem 1.5rem;
+      width: 100%;
+      max-width: 420px;
+    }
 
-        h2 {
-            color: #4CAF50; /* Earthy Green */
-            text-align: center;
-            font-weight: bold;
-            margin-bottom: 30px;
-        }
+    h2 {
+      font-size: 1.5rem;
+      color: #198754;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
 
-        .form-control {
-            border-radius: 10px;
-        }
+    .form-control {
+      border-radius: 10px;
+    }
 
-        .form-control:focus {
-            border-color: #A8D5BA; /* Lime accent */
-            box-shadow: 0 0 0 0.2rem rgba(168, 213, 186, 0.5);
-        }
+    .form-control:focus {
+      border-color: #198754;
+      box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.2);
+    }
 
-        .btn-primary {
-            background-color: #6B8E23;
-            border: none;
-            border-radius: 10px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
+    .btn-signup {
+      background-color: #198754;
+      border: none;
+      font-weight: 600;
+      border-radius: 10px;
+    }
 
-        .btn-primary:hover {
-            background-color: #4CAF50;
-        }
+    .btn-signup:hover {
+      background-color: #157347;
+    }
 
-        .btn-outline-secondary {
-            border-radius: 10px;
-            transition: all 0.3s ease;
-        }
+    .btn-outline {
+      border-radius: 8px;
+      border-color: #ccc;
+    }
 
-        .btn-outline-secondary:hover {
-            background-color: #A8D5BA;
-            color: #000;
-        }
+    .form-text a {
+      color: #198754;
+      text-decoration: none;
+      font-weight: 500;
+    }
 
-        .text-center span {
-            display: block;
-            margin-top: 10px;
-            color: #6B8E23;
-            font-weight: 500;
-        }
-    </style>
+    .form-text a:hover {
+      color: #145c32;
+    }
+
+    .toggle-password {
+      cursor: pointer;
+    }
+
+    @media (max-width: 576px) {
+      .signup-box {
+        padding: 1.2rem 1rem;
+      }
+
+      h2 {
+        font-size: 1.3rem;
+        margin-bottom: 1.2rem;
+      }
+
+      .btn {
+        font-size: 0.95rem;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<div class="signup-form animate__animated animate__fadeInUp" data-aos="zoom-in">
+  <div class="signup-box">
     <h2>Customer Signup</h2>
     <form id="signupForm" method="POST" novalidate>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">{{ message }}</div>
-            {% endfor %}
-        {% endwith %}
-        <input name="name" class="form-control mb-3" placeholder="Name" required>
-        <input name="email" type="email" class="form-control mb-3" placeholder="Email" required>
-        <div class="input-group mb-3">
-    <input name="password" type="password" class="form-control" placeholder="Password" required>
-    <span class="input-group-text toggle-password" style="background-color: #F5F5DC; cursor: pointer;">
-        <i class="bi bi-eye-slash-fill"></i>
-    </span>
-</div>
-        <input name="phone" class="form-control mb-3" placeholder="Phone" required>
-        <input name="address" class="form-control mb-3" placeholder="Address" required>
-        <input name="cnic" class="form-control mb-4" placeholder="CNIC" required>
-        <button type="submit" class="btn btn-primary w-100 mb-3">Sign Up</button>
+      <div id="form-errors"></div>
 
-        <div class="text-center">
-            <span>Already have an account?</span>
-            <a href="{{ url_for('customer_bp.customer_login') }}" class="btn btn-outline-secondary mt-2">Login</a>
-        </div>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endwith %}
+
+      <input name="name" class="form-control mb-3" placeholder="Name" required>
+      <input name="email" type="email" class="form-control mb-3" placeholder="Email" required>
+
+      <div class="input-group mb-3">
+        <input name="password" type="password" class="form-control" placeholder="Password" required>
+        <span class="input-group-text toggle-password bg-light"><i class="bi bi-eye-slash-fill"></i></span>
+      </div>
+
+      <input name="phone" class="form-control mb-3" placeholder="Phone (e.g., 03XXXXXXXXX)" required>
+      <input name="address" class="form-control mb-3" placeholder="Address" required>
+      <input name="cnic" class="form-control mb-4" placeholder="CNIC (13 digits)" required>
+
+      <button type="submit" class="btn btn-signup w-100 mb-3">Sign Up</button>
+
+      <div class="text-center form-text">
+        Already have an account? <br>
+        <a href="{{ url_for('customer_bp.customer_login') }}" class="btn btn-outline btn-sm mt-2">Login</a>
+      </div>
     </form>
-</div>
+  </div>
 
-<!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-<!-- Bootstrap Bundle JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<!-- AOS JS -->
-<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
-<script>
-    AOS.init();
-</script>
-<!-- jQuery Validation -->
-<script>
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
     $(document).ready(function () {
-        $('#signupForm').on('submit', function (e) {
-            let isValid = true;
-            let messages = [];
+      // Toggle password visibility
+      $('.toggle-password').on('click', function () {
+        const input = $(this).siblings('input');
+        const icon = $(this).find('i');
+        const type = input.attr('type') === 'password' ? 'text' : 'password';
+        input.attr('type', type);
+        icon.toggleClass('bi-eye-fill bi-eye-slash-fill');
+      });
 
-            const name = $('input[name="name"]').val().trim();
-            const email = $('input[name="email"]').val().trim();
-            const password = $('input[name="password"]').val().trim();
-            const phone = $('input[name="phone"]').val().trim();
-            const address = $('input[name="address"]').val().trim();
-            const cnic = $('input[name="cnic"]').val().trim();
+      // Client-side validation
+      $('#signupForm').on('submit', function (e) {
+        let isValid = true;
+        let messages = [];
 
-            // Reset all validations
-            $('.form-control').removeClass('is-invalid is-valid');
+        const name = $('input[name="name"]').val().trim();
+        const email = $('input[name="email"]').val().trim();
+        const password = $('input[name="password"]').val().trim();
+        const phone = $('input[name="phone"]').val().trim();
+        const address = $('input[name="address"]').val().trim();
+        const cnic = $('input[name="cnic"]').val().trim();
 
-            // Name Validation
-            if (name.length === 0 || name.length > 25 || !/^[a-zA-Z\s]+$/.test(name)) {
-                messages.push("Name must be under 25 characters and contain only letters.");
-                $('input[name="name"]').addClass('is-invalid');
-                isValid = false;
-            } else {
-                $('input[name="name"]').addClass('is-valid');
-            }
+        $('.form-control').removeClass('is-invalid is-valid');
 
-            // Email Validation
-            if (!/^\S+@\S+\.\S+$/.test(email)) {
-                messages.push("Please enter a valid email address.");
-                $('input[name="email"]').addClass('is-invalid');
-                isValid = false;
-            } else {
-                $('input[name="email"]').addClass('is-valid');
-            }
+        // Name
+        if (name === '' || name.length > 25 || !/^[a-zA-Z\s]+$/.test(name)) {
+          messages.push("Name must be under 25 characters and only letters.");
+          $('input[name="name"]').addClass('is-invalid');
+          isValid = false;
+        } else {
+          $('input[name="name"]').addClass('is-valid');
+        }
 
-            // Password Validation
-            if (password.length < 8 || !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-                messages.push("Password must be at least 8 characters and contain one special character.");
-                $('input[name="password"]').addClass('is-invalid');
-                isValid = false;
-            } else {
-                $('input[name="password"]').addClass('is-valid');
-            }
+        // Email
+        if (!/^\S+@\S+\.\S+$/.test(email)) {
+          messages.push("Enter a valid email.");
+          $('input[name="email"]').addClass('is-invalid');
+          isValid = false;
+        } else {
+          $('input[name="email"]').addClass('is-valid');
+        }
 
-            // Phone Validation
-            if (!/^03\d{9}$/.test(phone)) {
-                messages.push("Phone must be 11 digits, start with 03, and contain no spaces.");
-                $('input[name="phone"]').addClass('is-invalid');
-                isValid = false;
-            } else {
-                $('input[name="phone"]').addClass('is-valid');
-            }
+        // Password
+        if (password.length < 8 || !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+          messages.push("Password must be at least 8 characters and contain one special character.");
+          $('input[name="password"]').addClass('is-invalid');
+          isValid = false;
+        } else {
+          $('input[name="password"]').addClass('is-valid');
+        }
 
-            // Address Validation
-            if (address.length === 0 || address.length > 100) {
-                messages.push("Address must not exceed 100 characters.");
-                $('input[name="address"]').addClass('is-invalid');
-                isValid = false;
-            } else {
-                $('input[name="address"]').addClass('is-valid');
-            }
+        // Phone
+        if (!/^03\d{9}$/.test(phone)) {
+          messages.push("Phone must start with 03 and be 11 digits.");
+          $('input[name="phone"]').addClass('is-invalid');
+          isValid = false;
+        } else {
+          $('input[name="phone"]').addClass('is-valid');
+        }
 
-            // CNIC Validation
-            if (!/^\d{13}$/.test(cnic)) {
-                messages.push("CNIC must be exactly 13 digits with no spaces or dashes.");
-                $('input[name="cnic"]').addClass('is-invalid');
-                isValid = false;
-            } else {
-                $('input[name="cnic"]').addClass('is-valid');
-            }
+        // Address
+        if (address === '' || address.length > 100) {
+          messages.push("Address must be under 100 characters.");
+          $('input[name="address"]').addClass('is-invalid');
+          isValid = false;
+        } else {
+          $('input[name="address"]').addClass('is-valid');
+        }
 
-            // Show errors
-            if (!isValid) {
-                e.preventDefault();
-                let errorBox = $('#form-errors');
-                if (errorBox.length === 0) {
-                    $(this).prepend('<div id="form-errors" class="alert alert-danger mb-3"></div>');
-                    errorBox = $('#form-errors');
-                }
-                errorBox.html(messages.join("<br>"));
-                $('html, body').animate({ scrollTop: $(".signup-form").offset().top - 20 }, 500);
-            }
-        });
+        // CNIC
+        if (!/^\d{13}$/.test(cnic)) {
+          messages.push("CNIC must be 13 digits without dashes.");
+          $('input[name="cnic"]').addClass('is-invalid');
+          isValid = false;
+        } else {
+          $('input[name="cnic"]').addClass('is-valid');
+        }
+
+        if (!isValid) {
+          e.preventDefault();
+          $('#form-errors').html(`<div class="alert alert-danger mb-3">${messages.join("<br>")}</div>`);
+          $('html, body').animate({ scrollTop: $(".signup-box").offset().top - 10 }, 400);
+        }
+      });
     });
-</script>
-
-
-
-<script>
-    AOS.init();
-
-    $(document).ready(function () {
-        // Password visibility toggle
-        $('.toggle-password').on('click', function () {
-            const input = $(this).siblings('input');
-            const icon = $(this).find('i');
-            const type = input.attr('type') === 'password' ? 'text' : 'password';
-            input.attr('type', type);
-            icon.toggleClass('bi-eye-fill bi-eye-slash-fill');
-        });
-
-        // Your existing validation logic (already present in your script)
-    });
-</script>
-
+  </script>
 </body>
 </html>
