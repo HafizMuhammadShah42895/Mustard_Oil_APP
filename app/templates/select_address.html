@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Address - Noor e Mustafa</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        #map { height: 400px; width: 100%; }
+        .address-search { position: relative; }
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+        .search-result-item {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+        .search-result-item:hover { background: #f8f9fa; }
+        .selected-address {
+            background: #e8f5e8;
+            border: 1px solid #4CAF50;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <h3 class="text-center mb-4">Select Delivery Address</h3>
+                
+                <div class="address-search mb-3">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search for an address...">
+                    <div id="searchResults" class="search-results"></div>
+                </div>
+                
+                <div id="map"></div>
+                
+                <div id="selectedAddressBox" class="selected-address" style="display: none;">
+                    <h6>Selected Address:</h6>
+                    <p id="selectedAddressText"></p>
+                    <button class="btn btn-success" onclick="confirmAddress()">Confirm Address</button>
+                </div>
+                
+                <div class="text-center mt-3">
+                    <button class="btn btn-secondary" onclick="history.back()">Back</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        let map, marker, selectedAddress = '';
+        let searchTimeout;
+
+        // Initialize map
+        function initMap() {
+            map = L.map('map').setView([31.5204, 74.3587], 10); // Lahore, Pakistan
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+            
+            map.on('click', function(e) {
+                reverseGeocode(e.latlng.lat, e.latlng.lng);
+            });
+        }
+
+        // Search address
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            clearTimeout(searchTimeout);
+            const query = e.target.value.trim();
+            
+            if (query.length < 3) {
+                hideSearchResults();
+                return;
+            }
+            
+            searchTimeout = setTimeout(() => searchAddress(query), 300);
+        });
+
+        function searchAddress(query) {
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=5&countrycodes=pk&q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => displaySearchResults(data))
+                .catch(error => console.error('Search error:', error));
+        }
+
+        function displaySearchResults(results) {
+            const resultsDiv = document.getElementById('searchResults');
+            resultsDiv.innerHTML = '';
+            
+            if (results.length === 0) {
+                resultsDiv.style.display = 'none';
+                return;
+            }
+            
+            results.forEach(result => {
+                const item = document.createElement('div');
+                item.className = 'search-result-item';
+                item.textContent = result.display_name;
+                item.onclick = () => selectSearchResult(result);
+                resultsDiv.appendChild(item);
+            });
+            
+            resultsDiv.style.display = 'block';
+        }
+
+        function selectSearchResult(result) {
+            const lat = parseFloat(result.lat);
+            const lng = parseFloat(result.lon);
+            updateMap(lat, lng, result.display_name);
+            hideSearchResults();
+            document.getElementById('searchInput').value = result.display_name;
+        }
+
+        function reverseGeocode(lat, lng) {
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.display_name) {
+                        updateMap(lat, lng, data.display_name);
+                        document.getElementById('searchInput').value = data.display_name;
+                    }
+                })
+                .catch(error => console.error('Reverse geocoding error:', error));
+        }
+
+        function updateMap(lat, lng, address) {
+            if (marker) map.removeLayer(marker);
+            
+            marker = L.marker([lat, lng]).addTo(map);
+            marker.bindPopup(address).openPopup();
+            map.setView([lat, lng], 15);
+            
+            selectedAddress = address;
+            document.getElementById('selectedAddressText').textContent = address;
+            document.getElementById('selectedAddressBox').style.display = 'block';
+        }
+
+        function hideSearchResults() {
+            document.getElementById('searchResults').style.display = 'none';
+        }
+
+        function confirmAddress() {
+            if (selectedAddress) {
+                const returnUrl = new URLSearchParams(window.location.search).get('return') || '/checkout';
+                window.location.href = `${returnUrl}?address=${encodeURIComponent(selectedAddress)}`;
+            }
+        }
+
+        // Hide search results when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.address-search')) {
+                hideSearchResults();
+            }
+        });
+
+        // Initialize map when page loads
+        document.addEventListener('DOMContentLoaded', initMap);
+    </script>
+</body>
+</html>

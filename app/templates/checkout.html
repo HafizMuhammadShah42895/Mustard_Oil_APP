@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - Noor e Mustafa{% endblock %}
+
+{% block extra_css %}
+<style>
+    .checkout-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+    .checkout-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    .checkout-header h2 {
+        color: #4CAF50;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    .checkout-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        padding: 2rem;
+    }
+    .form-control {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 0.75rem;
+        transition: border-color 0.2s ease;
+    }
+    .form-control:focus {
+        border-color: #4CAF50;
+        box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.15);
+    }
+    .form-label {
+        font-weight: 600;
+        color: #2E7D32;
+        margin-bottom: 0.5rem;
+    }
+    .order-summary {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 2rem 0;
+    }
+    .summary-title {
+        color: #2E7D32;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    .order-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #eee;
+    }
+    .order-item:last-child {
+        border-bottom: none;
+    }
+    .total-row {
+        background: #e8f5e8;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+    }
+    .total-amount {
+        color: #4CAF50;
+        font-weight: 700;
+        font-size: 1.25rem;
+    }
+    .btn-checkout {
+        background: #4CAF50;
+        border: none;
+        color: white;
+        padding: 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        width: 100%;
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+    }
+    .btn-checkout:hover {
+        background: #388E3C;
+        color: white;
+    }
+    .security-note {
+        text-align: center;
+        color: #6c757d;
+        font-size: 0.875rem;
+        margin-top: 1rem;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="checkout-container">
+    <div class="checkout-header">
+        <h2><i class="fas fa-credit-card mr-2"></i>Checkout</h2>
+        <p class="text-muted">Complete your order details</p>
+    </div>
+    
+    <div class="checkout-card">
+        <form method="POST">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="name" class="form-label">Full Name *</label>
+                    <input type="text" class="form-control" id="name" name="name" 
+                           placeholder="Enter your full name" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="email" class="form-label">Email Address *</label>
+                    <input type="email" class="form-control" id="email" name="email" 
+                           placeholder="your@email.com" required>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="phone" class="form-label">Phone Number *</label>
+                    <input type="tel" class="form-control" id="phone" name="phone" 
+                           placeholder="+92 300 1234567" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="address" class="form-label">Delivery Address *</label>
+                    <textarea class="form-control" id="address" name="address" rows="3" 
+                              placeholder="Enter your complete delivery address" required></textarea>
+                    <button type="button" class="btn btn-outline-success btn-sm mt-2" onclick="selectOnMap()">
+                        <i class="fas fa-map-marker-alt"></i> Select on Map
+                    </button>
+                </div>
+            </div>
+
+            <div class="order-summary">
+                <h5 class="summary-title">Order Summary</h5>
+                
+                {% for product_id, quantity in session.cart.items() %}
+                    {% set product = get_product(product_id) %}
+                    {% if product %}
+                        <div class="order-item">
+                            <div>
+                                <strong>{{ product.name }}</strong>
+                                <small class="text-muted d-block">Qty: {{ quantity }} × Rs. {{ product.price }}</small>
+                            </div>
+                            <span class="font-weight-bold">Rs. {{ product.price * quantity }}</span>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                
+                <div class="total-row">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <strong>Total Amount:</strong>
+                        <strong class="total-amount">Rs. {{ sum_cart_total() }}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-checkout">
+                <i class="fas fa-lock mr-2"></i>Place Order
+            </button>
+            
+            <a href="{{ url_for('customer_bp.view_cart') }}" class="btn btn-outline-secondary" style="width: 100%;">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Cart
+            </a>
+            
+            <div class="security-note">
+                <i class="fas fa-shield-alt mr-1"></i>
+                Your information is secure and protected
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function selectOnMap() {
+    window.location.href = '/select-address?return=' + encodeURIComponent(window.location.pathname);
+}
+
+// Check for address parameter in URL
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const selectedAddress = urlParams.get('address');
+    if (selectedAddress) {
+        document.getElementById('address').value = decodeURIComponent(selectedAddress);
+    }
+});
+</script>
+{% endblock %}

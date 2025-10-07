@@ -1,49 +1,52 @@
 
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session
-from werkzeug.security import generate_password_hash, check_password_hash
-import random
-from .models import db, Product, ContactMessage, Customer , CartItem , Order , OrderItem 
+from .models import db, Product, ContactMessage, Order, OrderItem, Payment, Review
 from .extensions import mail
 from flask_mail import Message
-from app.token import generate_reset_token, verify_reset_token
+import os
+from werkzeug.utils import secure_filename
 
 customer_bp = Blueprint('customer_bp', __name__)
 
+# Add these helper functions at the top of the file
+def get_product(product_id):
+    """Helper function to get product by ID for templates"""
+    return Product.query.get(int(product_id))
+
+def sum_cart_total():
+    """Helper function to calculate cart total for templates"""
+    if 'cart' not in session:
+        return 0
+    
+    total = 0
+    for product_id, quantity in session['cart'].items():
+        product = Product.query.get(int(product_id))
+        if product:
+            total += product.price * quantity
+    return total
+
+def cart_count():
+    """Helper function to get cart item count for templates"""
+    if 'cart' not in session:
+        return 0
+    
+    return sum(session['cart'].values())
+
+# These functions are now registered as template globals in __init__.py
+
 # -------------------- Home / Products ----------------------
-
-
-
-
-
 
 @customer_bp.route('/', endpoint='home')
 def index():
-    products = Product.query.all()
-    customer_id = session.get('customer_id')
-
-    orders = []
-    if customer_id:
-        orders = Order.query.filter_by(customer_id=customer_id).all()
-
-    return render_template('index.html', products=products, orders=orders)
-
-
-
-
-
-# @customer_bp.route('/products')
-# def customer_products():
-#     products = Product.query.all()
-#     return render_template('customer_products.html', products=products)
-
-
+    products = Product.query.filter_by(is_active=True).all()
+    return render_template('index.html', products=products)
 
 @customer_bp.route('/products')
 def customer_products():
     page = request.args.get('page', 1, type=int)
     search = request.args.get('search', '', type=str)
 
-    query = Product.query
+    query = Product.query.filter_by(is_active=True)
     if search:
         query = query.filter(Product.name.ilike(f"%{search}%"))
 
@@ -51,8 +54,6 @@ def customer_products():
     products = pagination.items
 
     return render_template('customer_products.html', products=products, pagination=pagination, search=search)
-
-
 
 # -------------------- Contact Form -------------------------
 
@@ -113,498 +114,412 @@ def contact():
 
     return redirect(url_for('customer_bp.home') + '#contact')
 
-# -------------------- Signup / Verify Email ----------------------
-
-@customer_bp.route('/customer_signup', methods=['GET', 'POST'])
-def customer_signup():
-    if request.method == 'POST':
-        name = request.form.get('name')
-        email = request.form.get('email')
-        password = request.form.get('password')
-        phone = request.form.get('phone')
-        address = request.form.get('address')
-        cnic = request.form.get('cnic')
-
-        # Uniqueness checks
-        if Customer.query.filter_by(Email=email).first():
-            flash("Email already exists.", "danger")
-            return render_template('customer_signup.html')
-
-        if Customer.query.filter_by(Phone=phone).first():
-            flash("Phone already exists.", "danger")
-            return render_template('customer_signup.html')
-
-        if Customer.query.filter_by(Cnic=cnic).first():
-            flash("CNIC already exists.", "danger")
-            return render_template('customer_signup.html')
-
-        verification_code = str(random.randint(100000, 999999))
-        session['temp_customer'] = {
-            'name': name,
-            'email': email,
-            'password': generate_password_hash(password),
-            'phone': phone,
-            'address': address,
-            'cnic': cnic,
-            'code': verification_code
-        }
-
-        try:
-            msg = Message("Email Verification Code", recipients=[email])
-            msg.body = f"Your verification code is: {verification_code}"
-            mail.send(msg)
-
-            flash("Verification code sent to your email.", "info")
-            return redirect(url_for('customer_bp.verify_email'))
-        except Exception as e:
-            flash(f"Failed to send email: {str(e)}", "danger")
-
-    return render_template('customer_signup.html')
-
-
-@customer_bp.route('/verify_email', methods=['GET', 'POST'])
-def verify_email():
-    if request.method == 'POST':
-        entered_code = request.form.get('code')
-        temp = session.get('temp_customer')
-
-        if not temp:
-            flash("Session expired. Please sign up again.", "danger")
-            return redirect(url_for('customer_bp.customer_signup'))
-
-        if entered_code == temp['code']:
-            try:
-                new_customer = Customer(
-                    Name=temp['name'],
-                    Email=temp['email'],
-                    Password=temp['password'],
-                    Phone=temp['phone'],
-                    Address=temp['address'],
-                    Cnic=temp['cnic']
-                )
-                db.session.add(new_customer)
-                db.session.commit()
-                session.pop('temp_customer')
-
-                flash("Email verified! You can now log in.", "success")
-                return redirect(url_for('customer_bp.customer_login'))
-            except Exception as e:
-                db.session.rollback()
-                flash(f"Error creating account: {str(e)}", "danger")
-                return redirect(url_for('customer_bp.customer_signup'))
-        else:
-            flash("Invalid code. Please try again.", "danger")
-
-    return render_template('verify_email.html')
-
-
-# -------------------- Login / Logout ----------------------
-
-@customer_bp.route('/login', methods=['GET', 'POST'])
-def customer_login():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-
-        customer = Customer.query.filter_by(Email=email).first()
-        if customer and check_password_hash(customer.Password, password):
-            session['customer_id'] = customer.CustomerID
-            session['customer_name'] = customer.Name 
-            flash("Login successful!", "success")
-            return redirect(url_for('customer_bp.home'))
-        else:
-            flash("Invalid credentials.", "danger")
-
-    return render_template('customer_login.html')
-
-
-@customer_bp.route('/logout')
-def customer_logout():
-    session.pop('customer_id', None)
-    flash("Logged out successfully.", "info")
-    return redirect(url_for('customer_bp.customer_login'))
-
-
-# -------------------- Forgot / Reset Password ----------------------
-
-@customer_bp.route('/forgot_password', methods=['GET', 'POST'])
-def forgot_password():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        customer = Customer.query.filter_by(Email=email).first()
-
-        if customer:
-            token = generate_reset_token(email)
-            reset_link = url_for('customer_bp.reset_password', token=token, _external=True)
-
-            msg = Message('Password Reset Link', recipients=[email])
-            msg.body = f'Click to reset your password: {reset_link}'
-            mail.send(msg)
-
-            flash('Reset link sent to your email.', 'success')
-        else:
-            flash('Email not found.', 'danger')
-
-    return render_template('forgot_password.html')
-
-
-@customer_bp.route('/reset_password/<token>', methods=['GET', 'POST'])
-def reset_password(token):
-    email = verify_reset_token(token)
-    if not email:
-        flash('Invalid or expired token.', 'danger')
-        return redirect(url_for('customer_bp.forgot_password'))
-
-    if request.method == 'POST':
-        password = request.form.get('password')
-        confirm = request.form.get('confirm_password')
-
-        if password != confirm:
-            flash('Passwords do not match.', 'danger')
-            return redirect(request.url)
-
-        if len(password) < 8 or not any(char in "!@#$%^&*()" for char in password):
-            flash('Password must be at least 8 characters and include one special character.', 'danger')
-            return redirect(request.url)
-
-        customer = Customer.query.filter_by(Email=email).first()
-        if customer:
-            customer.Password = generate_password_hash(password)
-            db.session.commit()
-            flash('Password updated. Please log in.', 'success')
-            return redirect(url_for('customer_bp.customer_login'))
-
-    return render_template('reset_password.html')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# -------------------- Guest Checkout Process ----------------------
 
 @customer_bp.route('/add_to_cart/<int:product_id>', methods=['POST'])
 def add_to_cart(product_id):
-    if 'customer_id' not in session:
-        flash("Please login to add items to cart.", "warning")
-        return redirect(url_for('customer_bp.customer_login'))
-
-    customer_id = session['customer_id']
-    existing_item = CartItem.query.filter_by(customer_id=customer_id, product_id=product_id).first()
-
-    if existing_item:
-        existing_item.quantity += 1  # increase quantity
+    # Store cart items in session for guest users
+    if 'cart' not in session:
+        session['cart'] = {}
+    
+    product_id_str = str(product_id)
+    if product_id_str in session['cart']:
+        session['cart'][product_id_str] += 1
     else:
-        new_item = CartItem(customer_id=customer_id, product_id=product_id, quantity=1)
-        db.session.add(new_item)
-
-    db.session.commit()
+        session['cart'][product_id_str] = 1
+    
+    session.modified = True
     flash("Product added to cart.", "success")
     return redirect(url_for('customer_bp.view_cart'))
 
-
-
-
-
-
 @customer_bp.route('/cart')
 def view_cart():
-    if 'customer_id' not in session:
-        flash("Please login to view your cart.", "warning")
-        return redirect(url_for('customer_bp.customer_login'))
+    if 'cart' not in session or not session['cart']:
+        flash("Your cart is empty.", "info")
+        return render_template('cart.html', cart_items=[])
+    
+    cart_items = []
+    total = 0
+    
+    for product_id, quantity in session['cart'].items():
+        product = Product.query.get(int(product_id))
+        if product:
+            item_total = product.price * quantity
+            total += item_total
+            cart_items.append({
+                'product': product,
+                'quantity': quantity,
+                'total': item_total
+            })
+    
+    return render_template('cart.html', cart_items=cart_items, total=total)
 
-    customer_id = session['customer_id']
-    cart_items = CartItem.query.filter_by(customer_id=customer_id).all()
-    return render_template('cart.html', cart_items=cart_items)
-
-
-
-
-
-
-
-
-@customer_bp.route('/remove_from_cart/<int:item_id>', methods=['POST'])
-def remove_from_cart(item_id):
-    item = CartItem.query.get_or_404(item_id)
-    db.session.delete(item)
-    db.session.commit()
-    flash("Item removed from cart.", "info")
+@customer_bp.route('/remove_from_cart/<int:product_id>', methods=['POST'])
+def remove_from_cart(product_id):
+    product_id_str = str(product_id)
+    if 'cart' in session and product_id_str in session['cart']:
+        del session['cart'][product_id_str]
+        session.modified = True
+        flash("Item removed from cart.", "info")
     return redirect(url_for('customer_bp.view_cart'))
 
-
-
-
-
-
-
-
-@customer_bp.route('/update_cart/<int:item_id>', methods=['POST'])
-def update_cart(item_id):
-    new_qty = int(request.form.get('quantity'))
-    item = CartItem.query.get_or_404(item_id)
-
-    if new_qty < 1:
-        db.session.delete(item)  # delete if quantity is zero or negative
-    else:
-        item.quantity = new_qty
-
-    db.session.commit()
-    flash("Cart updated.", "success")
+@customer_bp.route('/update_cart/<int:product_id>', methods=['POST'])
+def update_cart(product_id):
+    new_qty = int(request.form.get('quantity', 1))
+    product_id_str = str(product_id)
+    
+    if 'cart' in session and product_id_str in session['cart']:
+        if new_qty < 1:
+            del session['cart'][product_id_str]
+        else:
+            session['cart'][product_id_str] = new_qty
+        session.modified = True
+        flash("Cart updated.", "success")
+    
     return redirect(url_for('customer_bp.view_cart'))
-
-
-
 
 @customer_bp.route('/clear_cart', methods=['POST'])
 def clear_cart():
-    if 'customer_id' not in session:
-        flash("Please login to clear your cart.", "warning")
-        return redirect(url_for('customer_bp.customer_login'))
-
-    customer_id = session['customer_id']
-    CartItem.query.filter_by(customer_id=customer_id).delete()
-    db.session.commit()
-    flash("Your cart has been cleared.", "info")
+    if 'cart' in session:
+        session.pop('cart')
+        flash("Your cart has been cleared.", "info")
     return redirect(url_for('customer_bp.view_cart'))
 
-
-
-
-
-
-
-
-
-
-
-
-@customer_bp.route('/place_order/<int:item_id>', methods=['GET', 'POST'])
-def place_order(item_id):
-    if 'customer_id' not in session:
-        flash("Please login to place an order.", "warning")
-        return redirect(url_for('customer_bp.customer_login'))
-
-    cart_item = CartItem.query.get_or_404(item_id)
-    product = Product.query.get_or_404(cart_item.product_id)
-    customer = Customer.query.get_or_404(cart_item.customer_id)
-
+@customer_bp.route('/checkout', methods=['GET', 'POST'])
+def checkout():
+    if 'cart' not in session or not session['cart']:
+        flash("Your cart is empty.", "warning")
+        return redirect(url_for('customer_bp.view_cart'))
+    
     if request.method == 'POST':
-        quantity = int(request.form.get('quantity'))
+        name = request.form.get('name')
         email = request.form.get('email')
+        phone = request.form.get('phone')
         address = request.form.get('address')
-
-        if quantity < 1:
-            flash("Quantity must be at least 1.", "danger")
-            return redirect(request.url)
-
-        # Update customer details
-        customer.Email = email
-        customer.Address = address
-
-        # Calculate total price
-        total_price = product.price * quantity
-
+        
+        if not all([name, email, phone, address]):
+            flash("All fields are required.", "danger")
+            return redirect(url_for('customer_bp.checkout'))
+        
+        # Calculate total
+        total = 0
+        order_items_data = []
+        
+        for product_id, quantity in session['cart'].items():
+            product = Product.query.get(int(product_id))
+            if product:
+                item_total = product.price * quantity
+                total += item_total
+                order_items_data.append({
+                    'product': product,
+                    'quantity': quantity,
+                    'price': product.price
+                })
+        
         # Create order
         order = Order(
-            customer_id=customer.CustomerID,
-            name=customer.Name,
+            name=name,
             email=email,
+            phone=phone,
             address=address,
-            phone=customer.Phone,
-            total_price=total_price
+            total_price=total
         )
         db.session.add(order)
-        db.session.flush()  # get order.id before commit
-
-        # Create order item
-        order_item = OrderItem(
-            order_id=order.id,
-            product_id=product.id,
-            quantity=quantity,
-            price=product.price
-        )
-        db.session.add(order_item)
-
-        # Remove item from cart
-        db.session.delete(cart_item)
-        db.session.commit()
-
-        try:
-            # Email to Admin
-            msg_admin = Message(
-                subject='New Order Received',
-                sender='hafizmuhammadshah11@gmail.com',
-                recipients=['hafizmuhammadshah11@gmail.com']
+        db.session.flush()
+        
+        # Create order items
+        for item_data in order_items_data:
+            order_item = OrderItem(
+                order_id=order.id,
+                product_id=item_data['product'].id,
+                quantity=item_data['quantity'],
+                price=item_data['price']
             )
-            msg_admin.body = f"""
-            A new order has been placed:
-
-            Customer: {customer.Name}
-            Email: {email}
-            Address: {address}
-
-            Product: {product.name}
-            Quantity: {quantity}
-            Price per item: Rs. {product.price}
-            Total: Rs. {total_price}
-            """
-            mail.send(msg_admin)
-
-            # Email to Customer
+            db.session.add(order_item)
+        
+        db.session.commit()
+        
+        # Clear cart
+        session.pop('cart')
+        
+        # Send confirmation email
+        try:
             msg_cust = Message(
                 subject='Your Order Confirmation',
                 sender='hafizmuhammadshah11@gmail.com',
                 recipients=[email]
             )
             msg_cust.body = f"""
-            Dear {customer.Name},
+            Dear {name},
 
             Thank you for your order!
 
-            Product: {product.name}
-            Quantity: {quantity}
-            Price per item: Rs. {product.price}
-            Total: Rs. {total_price}
+            Order ID: #{order.id}
+            Total Amount: Rs. {total}
 
             We will deliver your order to:
             {address}
+
+            Please complete your payment and upload the screenshot:
+            http://127.0.0.1:5000/payment_instructions/{order.id}
 
             Regards,
             Pure Mustard Oil Team
             """
             mail.send(msg_cust)
+            
+            # Email to admin
+            msg_admin = Message(
+                subject='New Guest Order Received',
+                sender='hafizmuhammadshah11@gmail.com',
+                recipients=['hafizmuhammadshah11@gmail.com']
+            )
+            msg_admin.body = f"""
+            A new guest order has been placed:
 
+            Order ID: #{order.id}
+            Customer: {name}
+            Email: {email}
+            Phone: {phone}
+            Address: {address}
+            Total: Rs. {total}
+            """
+            mail.send(msg_admin)
+            
         except Exception as e:
             flash("Order placed, but failed to send email.", "warning")
             print(str(e))
-        else:
-            flash("Order placed successfully and email sent.", "success")
+        
+        flash("Order placed successfully! Please complete your payment.", "success")
+        return redirect(url_for('customer_bp.order_confirmation', order_id=order.id))
+    
+    return render_template('checkout.html')
 
-        return redirect(url_for('customer_bp.my_orders'))
-
-    return render_template('place_order.html', cart_item=cart_item, product=product, customer=customer)
-
-
-
-
-
-
-
-
-
-@customer_bp.route('/my_orders')
-def my_orders():
-    if 'customer_id' not in session:
-        flash("Please login to view your orders.", "warning")
-        return redirect(url_for('customer_bp.customer_login'))
-
-    customer_id = session['customer_id']
-    orders = Order.query.filter_by(customer_id=customer_id).order_by(Order.id.desc()).all()
-    return render_template('my_orders.html', orders=orders)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Route to change order address
-@customer_bp.route('/change_address/<int:order_id>', methods=['GET', 'POST'])
-def change_order_address(order_id):
+@customer_bp.route('/order_confirmation/<int:order_id>')
+def order_confirmation(order_id):
     order = Order.query.get_or_404(order_id)
+    return render_template('order_confirmation.html', order=order)
 
-    # Check if user is authorized
-    if order.customer_id != session.get('customer_id'):
-        flash("Unauthorized access.", "danger")
-        return redirect(url_for('customer_bp.my_orders'))
-
-    # Only allow address change for Pending orders
-    if order.status.lower() != 'pending':
-        flash("You can only change the address for pending orders.", "warning")
-        return redirect(url_for('customer_bp.my_orders'))
-
+@customer_bp.route('/payment_instructions/<int:order_id>', methods=['GET', 'POST'])
+def payment_instructions(order_id):
+    order = Order.query.get_or_404(order_id)
+    
     if request.method == 'POST':
-        new_address = request.form.get('address')
-        if not new_address:
-            flash("Address cannot be empty.", "warning")
-        else:
-            order.address = new_address
+        if 'payment_screenshot' not in request.files:
+            flash('No file selected.', 'danger')
+            return redirect(request.url)
+        
+        file = request.files['payment_screenshot']
+        if file.filename == '':
+            flash('No file selected.', 'danger')
+            return redirect(request.url)
+        
+        if file:
+            filename = secure_filename(f"payment_{order_id}_{file.filename}")
+            filepath = os.path.join('app/static/uploads', filename)
+            file.save(filepath)
+            
+            # Update order with payment screenshot
+            order.payment_screenshot = filename
+            order.payment_status = 'Pending Verification'
             db.session.commit()
-            flash("Delivery address updated successfully.", "success")
-            return redirect(url_for('customer_bp.my_orders'))
-
-    return render_template('change_address.html', order=order)
-
-
-
-# from flask_mail import Message 
-# from app import mail  # adjust if your mail is imported differently 
-
-@customer_bp.route('/cancel_order/<int:order_id>')
-def cancel_order(order_id):
-    order = Order.query.get_or_404(order_id)
-
-    if order.customer_id != session.get('customer_id'):
-        flash("Unauthorized access.", "danger")
-    elif order.status.lower() == 'cancelled':
-        flash("Order is already cancelled.", "info")
-    elif order.status.lower() != 'pending':
-        flash("Only pending orders can be cancelled.", "warning")
-    else:
-        order.status = 'Cancelled'
-        db.session.commit()
-        flash("Order cancelled successfully.", "success")
-
-        # Send email to admin
-        try:
-            msg = Message(
-                subject=f"Order #{order.id} Cancelled",
-                recipients=["hafizmuhammadshah11@gmail.com"],
-                body=f"""
-Dear Admin,
-
-Order #{order.id} placed by {order.name} has been cancelled.
-
-Details:
-- Email: {order.email}
-- Phone: {order.phone}
-- Total: Rs. {order.total_price}
-- Address: {order.address}
-
-Regards,
-Your Website
-"""
+            
+            # Create payment record
+            payment = Payment(
+                order_id=order.id,
+                amount=order.total_price,
+                screenshot_filename=filename
             )
-            mail.send(msg)
-        except Exception as e:
-            print(f"Email sending failed: {e}")  # Removed current_app.logger
+            db.session.add(payment)
+            db.session.commit()
+            
+            # Send email to admin
+            try:
+                msg = Message(
+                    subject=f'Payment Screenshot Uploaded - Order #{order.id}',
+                    sender='hafizmuhammadshah11@gmail.com',
+                    recipients=['hafizmuhammadshah11@gmail.com']
+                )
+                msg.body = f"""
+                A payment screenshot has been uploaded for Order #{order.id}
 
-    return redirect(url_for('customer_bp.my_orders'))
+                Customer: {order.name}
+                Email: {order.email}
+                Amount: Rs. {order.total_price}
+                Screenshot: {filename}
 
+                Please verify the payment and update the order status.
+                """
+                mail.send(msg)
+                
+                # Email to customer
+                msg_cust = Message(
+                    subject=f'Payment Screenshot Received - Order #{order.id}',
+                    sender='hafizmuhammadshah11@gmail.com',
+                    recipients=[order.email]
+                )
+                msg_cust.body = f"""
+                Dear {order.name},
 
+                We have received your payment screenshot for Order #{order.id}.
 
+                We will verify your payment and update the order status shortly.
+
+                Thank you for your patience.
+
+                Regards,
+                Pure Mustard Oil Team
+                """
+                mail.send(msg_cust)
+                
+            except Exception as e:
+                flash("Screenshot uploaded, but failed to send email.", "warning")
+                print(str(e))
+            
+            flash('Payment screenshot uploaded successfully! We will verify it shortly.', 'success')
+            return redirect(url_for('customer_bp.order_confirmation', order_id=order.id))
+    
+    return render_template('payment_instructions.html', order=order)
+
+@customer_bp.route('/upload_payment/<int:order_id>', methods=['GET', 'POST'])
+def upload_payment(order_id):
+    order = Order.query.get_or_404(order_id)
+    
+    if request.method == 'POST':
+        if 'payment_screenshot' not in request.files:
+            flash('No file selected.', 'danger')
+            return redirect(request.url)
+        
+        file = request.files['payment_screenshot']
+        if file.filename == '':
+            flash('No file selected.', 'danger')
+            return redirect(request.url)
+        
+        if file:
+            filename = secure_filename(f"payment_{order_id}_{file.filename}")
+            filepath = os.path.join('app/static/uploads', filename)
+            file.save(filepath)
+            
+            # Update order with payment screenshot
+            order.payment_screenshot = filename
+            order.payment_status = 'Pending Verification'
+            db.session.commit()
+            
+            # Create payment record
+            payment = Payment(
+                order_id=order.id,
+                amount=order.total_price,
+                screenshot_filename=filename
+            )
+            db.session.add(payment)
+            db.session.commit()
+            
+            # Send email to admin
+            try:
+                msg = Message(
+                    subject=f'Payment Screenshot Uploaded - Order #{order.id}',
+                    sender='hafizmuhammadshah11@gmail.com',
+                    recipients=['hafizmuhammadshah11@gmail.com']
+                )
+                msg.body = f"""
+                A payment screenshot has been uploaded for Order #{order.id}
+
+                Customer: {order.name}
+                Email: {order.email}
+                Amount: Rs. {order.total_price}
+                Screenshot: {filename}
+
+                Please verify the payment and update the order status.
+                """
+                mail.send(msg)
+                
+                # Email to customer
+                msg_cust = Message(
+                    subject=f'Payment Screenshot Received - Order #{order.id}',
+                    sender='hafizmuhammadshah11@gmail.com',
+                    recipients=[order.email]
+                )
+                msg_cust.body = f"""
+                Dear {order.name},
+
+                We have received your payment screenshot for Order #{order.id}.
+
+                We will verify your payment and update the order status shortly.
+
+                Thank you for your patience.
+
+                Regards,
+                Pure Mustard Oil Team
+                """
+                mail.send(msg_cust)
+                
+            except Exception as e:
+                flash("Screenshot uploaded, but failed to send email.", "warning")
+                print(str(e))
+            
+            flash('Payment screenshot uploaded successfully! We will verify it shortly.', 'success')
+            return redirect(url_for('customer_bp.order_confirmation', order_id=order.id))
+    
+    return render_template('upload_payment.html', order=order)
+
+@customer_bp.route('/track_order_search', methods=['POST'])
+def track_order_search():
+    order_id = request.form.get('order_id')
+    email = request.form.get('email')
+    
+    if not order_id or not email:
+        flash('Please provide both Order ID and Email address.', 'danger')
+        return redirect(url_for('customer_bp.home'))
+    
+    order = Order.query.filter_by(id=order_id, email=email).first()
+    
+    if not order:
+        flash('Order not found. Please check your Order ID and Email address.', 'danger')
+        return redirect(url_for('customer_bp.home'))
+    
+    return redirect(url_for('customer_bp.track_order', order_id=order.id))
+
+@customer_bp.route('/track_order/<int:order_id>')
+def track_order(order_id):
+    order = Order.query.get_or_404(order_id)
+    review = Review.query.filter_by(order_id=order_id).first()
+    return render_template('track_order.html', order=order, review=review)
+
+@customer_bp.route('/select-address')
+def select_address():
+    return render_template('select_address.html')
+
+@customer_bp.route('/review/<int:order_id>', methods=['GET', 'POST'])
+def review_order(order_id):
+    order = Order.query.get_or_404(order_id)
+    
+    if order.status != 'Completed':
+        flash('You can only review completed orders.', 'warning')
+        return redirect(url_for('customer_bp.track_order', order_id=order_id))
+    
+    existing_review = Review.query.filter_by(order_id=order_id).first()
+    if existing_review:
+        flash('You have already reviewed this order.', 'info')
+        return redirect(url_for('customer_bp.track_order', order_id=order_id))
+    
+    if request.method == 'POST':
+        rating = int(request.form.get('rating'))
+        comment = request.form.get('comment', '').strip()
+        
+        if not rating or rating < 1 or rating > 5:
+            flash('Please select a valid rating.', 'danger')
+            return redirect(request.url)
+        
+        review = Review(
+            order_id=order_id,
+            customer_name=order.name,
+            rating=rating,
+            comment=comment
+        )
+        db.session.add(review)
+        db.session.commit()
+        
+        flash('Thank you for your review!', 'success')
+        return redirect(url_for('customer_bp.track_order', order_id=order_id))
+    
+    return render_template('review_order.html', order=order)

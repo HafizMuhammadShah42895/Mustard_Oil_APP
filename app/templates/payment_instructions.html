@@ -1,0 +1,305 @@
+{% extends "base.html" %}
+
+{% block title %}Payment Instructions - Noor e Mustafa{% endblock %}
+
+{% block extra_css %}
+<style>
+    .payment-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+    .payment-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        padding: 2rem;
+    }
+    .payment-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    .payment-header h2 {
+        color: #4CAF50;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    .order-info {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #eee;
+    }
+    .info-row:last-child {
+        border-bottom: none;
+    }
+    .bank-details {
+        background: #e8f5e8;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 2rem 0;
+        border-left: 4px solid #4CAF50;
+    }
+    .bank-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(76, 175, 80, 0.2);
+    }
+    .bank-row:last-child {
+        border-bottom: none;
+    }
+    .copy-btn {
+        background: #4CAF50;
+        border: none;
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        cursor: pointer;
+    }
+    .copy-btn:hover {
+        background: #388E3C;
+    }
+    .upload-section {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 2rem;
+        text-align: center;
+        margin: 2rem 0;
+    }
+    .file-upload {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+        width: 100%;
+    }
+    .file-upload input[type=file] {
+        position: absolute;
+        left: -9999px;
+    }
+    .file-upload-btn {
+        background: #4CAF50;
+        border: 2px dashed #388E3C;
+        border-radius: 10px;
+        padding: 2rem;
+        color: white;
+        width: 100%;
+        display: block;
+        transition: background 0.3s ease;
+    }
+    .file-upload-btn:hover {
+        background: #388E3C;
+    }
+    .btn-submit {
+        background: #4CAF50;
+        border: none;
+        color: white;
+        padding: 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+    .btn-submit:hover {
+        background: #388E3C;
+        color: white;
+    }
+    .steps {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 2rem 0;
+        border: 1px solid #eee;
+    }
+    .step-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+    .step-number {
+        width: 30px;
+        height: 30px;
+        background: #4CAF50;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 1rem;
+        font-size: 0.875rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="payment-container">
+    <div class="payment-card">
+        <div class="payment-header">
+            <h2><i class="fas fa-credit-card mr-2"></i>Payment Instructions</h2>
+            <p class="text-muted">Complete your payment to confirm your order</p>
+        </div>
+        
+        <div class="order-info">
+            <h5 style="color: #2E7D32; margin-bottom: 1rem;">Order Information</h5>
+            
+            <div class="info-row">
+                <span><strong>Order ID:</strong></span>
+                <span style="color: #4CAF50;">#{{ order.id }}</span>
+            </div>
+            
+            <div class="info-row">
+                <span><strong>Amount to Pay:</strong></span>
+                <span style="color: #4CAF50; font-weight: 600; font-size: 1.1rem;">Rs. {{ order.total_price }}</span>
+            </div>
+            
+            <div class="info-row">
+                <span><strong>Customer:</strong></span>
+                <span>{{ order.name }}</span>
+            </div>
+        </div>
+
+        <div class="bank-details">
+            <h5 style="color: #2E7D32; margin-bottom: 1rem;">Bank Account Details</h5>
+            
+            <div class="bank-row">
+                <div>
+                    <strong>Account Title:</strong><br>
+                    <span>Noor e Mustafa</span>
+                </div>
+                <button class="copy-btn" onclick="copyToClipboard('Noor e Mustafa')">
+                    <i class="fas fa-copy"></i> Copy
+                </button>
+            </div>
+            
+            <div class="bank-row">
+                <div>
+                    <strong>Account Number:</strong><br>
+                    <span>1234-5678-9012-3456</span>
+                </div>
+                <button class="copy-btn" onclick="copyToClipboard('1234-5678-9012-3456')">
+                    <i class="fas fa-copy"></i> Copy
+                </button>
+            </div>
+            
+            <div class="bank-row">
+                <div>
+                    <strong>Bank Name:</strong><br>
+                    <span>Example Bank</span>
+                </div>
+                <button class="copy-btn" onclick="copyToClipboard('Example Bank')">
+                    <i class="fas fa-copy"></i> Copy
+                </button>
+            </div>
+            
+            <div class="bank-row">
+                <div>
+                    <strong>Amount:</strong><br>
+                    <span style="color: #4CAF50; font-weight: 600;">Rs. {{ order.total_price }}</span>
+                </div>
+                <button class="copy-btn" onclick="copyToClipboard('{{ order.total_price }}')">
+                    <i class="fas fa-copy"></i> Copy
+                </button>
+            </div>
+        </div>
+
+        <div class="steps">
+            <h5 style="color: #2E7D32; margin-bottom: 1rem;">Payment Steps</h5>
+            
+            <div class="step-item">
+                <div class="step-number">1</div>
+                <div>
+                    <strong>Transfer the exact amount</strong><br>
+                    <small class="text-muted">Transfer Rs. {{ order.total_price }} to the above bank account</small>
+                </div>
+            </div>
+            
+            <div class="step-item">
+                <div class="step-number">2</div>
+                <div>
+                    <strong>Take a screenshot</strong><br>
+                    <small class="text-muted">Capture a clear screenshot of your payment confirmation</small>
+                </div>
+            </div>
+            
+            <div class="step-item">
+                <div class="step-number">3</div>
+                <div>
+                    <strong>Upload the screenshot</strong><br>
+                    <small class="text-muted">Upload the screenshot using the form below</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="upload-section">
+            <h5 style="color: #2E7D32; margin-bottom: 1rem;">Upload Payment Screenshot</h5>
+            
+            <form method="POST" enctype="multipart/form-data">
+                <div class="file-upload mb-3">
+                    <input type="file" id="payment_screenshot" name="payment_screenshot" accept="image/*" required onchange="updateFileName(this)">
+                    <label for="payment_screenshot" class="file-upload-btn">
+                        <i class="fas fa-cloud-upload-alt fa-2x mb-2"></i><br>
+                        <strong>Click to select payment screenshot</strong><br>
+                        <small>Supported formats: JPG, PNG, GIF (Max 10MB)</small>
+                    </label>
+                </div>
+                <div id="file-name" class="mb-3 text-muted"></div>
+                
+                <button type="submit" class="btn btn-submit">
+                    <i class="fas fa-upload mr-2"></i>Upload Screenshot & Confirm Payment
+                </button>
+                
+                <a href="{{ url_for('customer_bp.order_confirmation', order_id=order.id) }}" class="btn btn-outline-secondary" style="width: 100%;">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Order
+                </a>
+            </form>
+        </div>
+
+        <div class="text-center" style="background: #e8f5e8; padding: 1rem; border-radius: 8px;">
+            <small style="color: #2E7D32;">
+                <i class="fas fa-info-circle mr-1"></i>
+                <strong>Important:</strong> Your order will be confirmed after we verify your payment screenshot.
+                This usually takes 1-2 hours during business hours.
+            </small>
+        </div>
+    </div>
+</div>
+
+<script>
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(function() {
+            const btn = event.target.closest('.copy-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            btn.style.background = '#28a745';
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = '#4CAF50';
+            }, 2000);
+        });
+    }
+
+    function updateFileName(input) {
+        const fileName = document.getElementById('file-name');
+        if (input.files.length > 0) {
+            fileName.innerHTML = `<i class="fas fa-file-image mr-2"></i>Selected: ${input.files[0].name}`;
+            fileName.className = 'mb-3 text-success';
+        } else {
+            fileName.innerHTML = '';
+        }
+    }
+</script>
+{% endblock %}

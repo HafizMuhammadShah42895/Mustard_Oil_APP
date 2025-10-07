@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+
+{% block title %}Track Order - Noor e Mustafa{% endblock %}
+
+{% block extra_css %}
+<style>
+    .track-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+    .track-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    .track-header h2 {
+        color: #4CAF50;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    .track-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        padding: 2rem;
+    }
+    .info-section {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    .info-item {
+        padding: 0.5rem 0;
+    }
+    .status-progress {
+        background: #e9ecef;
+        border-radius: 10px;
+        height: 8px;
+        margin: 1rem 0;
+        overflow: hidden;
+    }
+    .progress-fill {
+        height: 100%;
+        border-radius: 10px;
+        transition: width 0.3s ease;
+    }
+    .status-pending { background: #ffc107; width: 25%; }
+    .status-delivery { background: #fd7e14; width: 75%; }
+    .status-completed { background: #4CAF50; width: 100%; }
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+    .badge-pending { background: #fff3cd; color: #856404; }
+    .badge-delivery { background: #ffeaa7; color: #d68910; }
+    .badge-completed { background: #d4edda; color: #155724; }
+    .badge-verified { background: #d4edda; color: #155724; }
+    .badge-rejected { background: #f8d7da; color: #721c24; }
+    .badge-pending-verification { background: #fff3cd; color: #856404; }
+    .review-section {
+        background: #e8f5e8;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+    }
+    .stars {
+        color: #ffc107;
+        margin: 0.5rem 0;
+    }
+    .btn-primary {
+        background: #4CAF50;
+        border: none;
+        color: white;
+        padding: 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+    .btn-primary:hover {
+        background: #388E3C;
+        color: white;
+    }
+    .alert-box {
+        background: #e8f5e8;
+        border: 1px solid #4CAF50;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="track-container">
+    <div class="track-header">
+        <h2><i class="fas fa-truck mr-2"></i>Track Order #{{ order.id }}</h2>
+        <p class="text-muted">Monitor your order status</p>
+    </div>
+    
+    <div class="track-card">
+        <div class="info-section">
+            <h5 style="color: #2E7D32; margin-bottom: 1rem;">Order Information</h5>
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Order ID:</strong><br>
+                    <span style="color: #4CAF50;">#{{ order.id }}</span>
+                </div>
+                <div class="info-item">
+                    <strong>Date:</strong><br>
+                    <span>{{ order.created_at.strftime('%B %d, %Y') }}</span>
+                </div>
+                <div class="info-item">
+                    <strong>Total Amount:</strong><br>
+                    <span style="color: #4CAF50; font-weight: 600;">Rs. {{ order.total_price }}</span>
+                </div>
+                <div class="info-item">
+                    <strong>Customer:</strong><br>
+                    <span>{{ order.name }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <h5 style="color: #2E7D32; margin-bottom: 1rem;">Order Status</h5>
+            <div class="status-progress">
+                <div class="progress-fill status-{{ order.status.lower() }}"></div>
+            </div>
+            <div class="text-center">
+                <span class="status-badge badge-{{ order.status.lower() }}">{{ order.status }}</span>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <h5 style="color: #2E7D32; margin-bottom: 1rem;">Payment Status</h5>
+            <div class="text-center">
+                <span class="status-badge badge-{{ order.payment_status.lower().replace(' ', '-') }}">{{ order.payment_status }}</span>
+            </div>
+            
+            {% if order.payment_status == 'Pending Verification' %}
+            <div class="alert-box">
+                <i class="fas fa-clock mr-2" style="color: #4CAF50;"></i>
+                Your payment screenshot is being reviewed. We'll notify you once verified.
+            </div>
+            {% elif order.payment_status == 'Pending' %}
+            <div class="alert-box">
+                <i class="fas fa-exclamation-triangle mr-2" style="color: #4CAF50;"></i>
+                Please upload your payment screenshot to proceed with your order.
+            </div>
+            {% elif order.payment_status == 'Rejected' %}
+            <div class="alert-box">
+                <i class="fas fa-times-circle mr-2" style="color: #dc3545;"></i>
+                Your payment was rejected. Please upload a new payment screenshot.
+            </div>
+            {% endif %}
+        </div>
+
+        {% if order.status == 'Completed' %}
+        <div class="review-section">
+            <h5 style="color: #2E7D32; margin-bottom: 1rem;">Review Status</h5>
+            {% if review %}
+            <div>
+                <i class="fas fa-check-circle mr-2" style="color: #4CAF50;"></i>
+                <strong>Thank you for your review!</strong>
+                <div class="stars">
+                    {% for i in range(1, 6) %}
+                        <i class="fas fa-star" style="color: {{ '#ffc107' if i <= review.rating else '#ddd' }};"></i>
+                    {% endfor %}
+                </div>
+                {% if review.comment %}
+                <p class="mb-0 mt-2">"{{ review.comment }}"</p>
+                {% endif %}
+            </div>
+            {% else %}
+            <div>
+                <i class="fas fa-star mr-2" style="color: #4CAF50;"></i>
+                Your order is completed! We'd love to hear your feedback.
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div>
+            {% if order.payment_status in ['Pending', 'Rejected'] %}
+            <a href="{{ url_for('customer_bp.payment_instructions', order_id=order.id) }}" class="btn btn-primary">
+                <i class="fas fa-credit-card mr-2"></i>Upload Payment Screenshot
+            </a>
+            {% endif %}
+            
+            {% if order.status == 'Completed' and not review %}
+            <a href="{{ url_for('customer_bp.review_order', order_id=order.id) }}" class="btn btn-primary">
+                <i class="fas fa-star mr-2"></i>Leave a Review
+            </a>
+            {% endif %}
+            
+            <a href="{{ url_for('customer_bp.home') }}" class="btn btn-outline-secondary" style="width: 100%;">
+                <i class="fas fa-shopping-bag mr-2"></i>Continue Shopping
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 
 db = SQLAlchemy()
 
@@ -18,7 +19,8 @@ class Product(db.Model):
     price = db.Column(db.Float, nullable=False)
     description = db.Column(db.Text, nullable=False)
     image_filename = db.Column(db.String(255), nullable=False)
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, server_default=func.now())
 
 
 
@@ -30,7 +32,7 @@ class ContactMessage(db.Model):
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), nullable=False)
     message = db.Column(db.Text, nullable=False)
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    created_at = db.Column(db.DateTime, server_default=func.now())
 
 
 
@@ -39,44 +41,20 @@ class ContactMessage(db.Model):
 
 
 
-# --- Customer Model ---
-class Customer(db.Model):
-    __tablename__ = 'customer'
-    CustomerID = db.Column(db.Integer, primary_key=True)
-    Name = db.Column(db.String(255), nullable=False)
-    Email = db.Column(db.String(255), unique=True, nullable=False)
-    Password = db.Column(db.String(255), nullable=False)
-    Phone = db.Column(db.String(20))
-    Address = db.Column(db.Text)
-    Cnic = db.Column(db.String(15))
-
-
-# --- CartItem Model ---
-class CartItem(db.Model):
-    __tablename__ = 'cart_item'
-    id = db.Column(db.Integer, primary_key=True)
-    customer_id = db.Column(db.Integer, db.ForeignKey('customer.CustomerID'), nullable=False)
-    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
-    quantity = db.Column(db.Integer, nullable=False, default=1)
-
-    product = db.relationship('Product')
-    customer = db.relationship('Customer')
-
-
-# --- Order Model ---
+# --- Guest Order Model ---
 class Order(db.Model):
     __tablename__ = 'order'
     id = db.Column(db.Integer, primary_key=True)
-    customer_id = db.Column(db.Integer, db.ForeignKey('customer.CustomerID'))
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), nullable=False)
     address = db.Column(db.String(255), nullable=False)
-    phone = db.Column(db.String(20))
+    phone = db.Column(db.String(20), nullable=False)
     total_price = db.Column(db.Float, nullable=False)
     status = db.Column(db.String(20), default='Pending')
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
-
-    customer = db.relationship('Customer')
+    payment_status = db.Column(db.String(20), default='Pending')
+    payment_screenshot = db.Column(db.String(255), nullable=True)
+    created_at = db.Column(db.DateTime, server_default=func.now())
+    
     order_items = db.relationship('OrderItem', backref='order', lazy=True)
 
 
@@ -90,6 +68,32 @@ class OrderItem(db.Model):
     price = db.Column(db.Float, nullable=False)  # price at time of order
 
     product = db.relationship('Product')
+
+
+# --- Payment Model ---
+class Payment(db.Model):
+    __tablename__ = 'payment'
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    payment_method = db.Column(db.String(50), default='Bank Transfer')
+    screenshot_filename = db.Column(db.String(255), nullable=True)
+    verified = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, server_default=func.now())
+    
+    order = db.relationship('Order')
+
+# --- Review Model ---
+class Review(db.Model):
+    __tablename__ = 'review'
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=False)
+    customer_name = db.Column(db.String(100), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)  # 1-5 stars
+    comment = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, server_default=func.now())
+    
+    order = db.relationship('Order')
 
 
 
