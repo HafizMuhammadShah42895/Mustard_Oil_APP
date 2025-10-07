@@ -7,7 +7,7 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
     
     # Database
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'mysql://username:password@localhost/database_name'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://422483_moa:muhammad%40555@mysql-hafizmuhammadshah.alwaysdata.net/hafizmuhammadshah_moa'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # Email Configuration
