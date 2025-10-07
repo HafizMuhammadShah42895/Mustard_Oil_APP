@@ -1,4 +1,3 @@
-
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session
 from .models import db, Product, ContactMessage, Order, OrderItem, Payment, Review
 from .extensions import mail
@@ -71,46 +70,8 @@ def contact():
     db.session.add(new_message)
     db.session.commit()
 
-    try:
-        # Message to Admin
-        msg_to_you = Message(
-            subject='New Contact Message from Website',
-            sender='hafizmuhammadshah11@gmail.com',
-            recipients=['hafizmuhammadshah11@gmail.com'],
-            reply_to=email
-        )
-        msg_to_you.body = f"""
-        New message from:
-
-        Name: {name}
-        Email: {email}
-        Message: {message}
-        """
-        mail.send(msg_to_you)
-
-        # Thank You to Customer
-        thank_you = Message(
-            subject='Thank You for Contacting Us!',
-            sender='hafizmuhammadshah11@gmail.com',
-            recipients=[email]
-        )
-        thank_you.body = f"""
-        Dear {name},
-
-        Thank you for reaching out! We've received your message.
-
-        Message: {message}
-
-        Regards,
-        Pure Mustard Oil Team
-        """
-        mail.send(thank_you)
-
-        flash('Your message has been sent successfully!', 'success')
-
-    except Exception as e:
-        flash('Failed to send email. Please try again later.', 'danger')
-        print(str(e))
+    # Email functionality disabled for Render deployment
+    flash('Your message has been sent successfully!', 'success')
 
     return redirect(url_for('customer_bp.home') + '#contact')
 
@@ -242,53 +203,8 @@ def checkout():
         # Clear cart
         session.pop('cart')
         
-        # Send confirmation email
-        try:
-            msg_cust = Message(
-                subject='Your Order Confirmation',
-                sender='hafizmuhammadshah11@gmail.com',
-                recipients=[email]
-            )
-            msg_cust.body = f"""
-            Dear {name},
-
-            Thank you for your order!
-
-            Order ID: #{order.id}
-            Total Amount: Rs. {total}
-
-            We will deliver your order to:
-            {address}
-
-            Please complete your payment and upload the screenshot:
-            http://127.0.0.1:5000/payment_instructions/{order.id}
-
-            Regards,
-            Pure Mustard Oil Team
-            """
-            mail.send(msg_cust)
-            
-            # Email to admin
-            msg_admin = Message(
-                subject='New Guest Order Received',
-                sender='hafizmuhammadshah11@gmail.com',
-                recipients=['hafizmuhammadshah11@gmail.com']
-            )
-            msg_admin.body = f"""
-            A new guest order has been placed:
-
-            Order ID: #{order.id}
-            Customer: {name}
-            Email: {email}
-            Phone: {phone}
-            Address: {address}
-            Total: Rs. {total}
-            """
-            mail.send(msg_admin)
-            
-        except Exception as e:
-            flash("Order placed, but failed to send email.", "warning")
-            print(str(e))
+        # Skip email sending to prevent timeout
+        # Email functionality disabled for Render deployment
         
         flash("Order placed successfully! Please complete your payment.", "success")
         return redirect(url_for('customer_bp.order_confirmation', order_id=order.id))
@@ -333,48 +249,7 @@ def payment_instructions(order_id):
             db.session.add(payment)
             db.session.commit()
             
-            # Send email to admin
-            try:
-                msg = Message(
-                    subject=f'Payment Screenshot Uploaded - Order #{order.id}',
-                    sender='hafizmuhammadshah11@gmail.com',
-                    recipients=['hafizmuhammadshah11@gmail.com']
-                )
-                msg.body = f"""
-                A payment screenshot has been uploaded for Order #{order.id}
-
-                Customer: {order.name}
-                Email: {order.email}
-                Amount: Rs. {order.total_price}
-                Screenshot: {filename}
-
-                Please verify the payment and update the order status.
-                """
-                mail.send(msg)
-                
-                # Email to customer
-                msg_cust = Message(
-                    subject=f'Payment Screenshot Received - Order #{order.id}',
-                    sender='hafizmuhammadshah11@gmail.com',
-                    recipients=[order.email]
-                )
-                msg_cust.body = f"""
-                Dear {order.name},
-
-                We have received your payment screenshot for Order #{order.id}.
-
-                We will verify your payment and update the order status shortly.
-
-                Thank you for your patience.
-
-                Regards,
-                Pure Mustard Oil Team
-                """
-                mail.send(msg_cust)
-                
-            except Exception as e:
-                flash("Screenshot uploaded, but failed to send email.", "warning")
-                print(str(e))
+            # Email functionality disabled for Render deployment
             
             flash('Payment screenshot uploaded successfully! We will verify it shortly.', 'success')
             return redirect(url_for('customer_bp.order_confirmation', order_id=order.id))
@@ -414,48 +289,7 @@ def upload_payment(order_id):
             db.session.add(payment)
             db.session.commit()
             
-            # Send email to admin
-            try:
-                msg = Message(
-                    subject=f'Payment Screenshot Uploaded - Order #{order.id}',
-                    sender='hafizmuhammadshah11@gmail.com',
-                    recipients=['hafizmuhammadshah11@gmail.com']
-                )
-                msg.body = f"""
-                A payment screenshot has been uploaded for Order #{order.id}
-
-                Customer: {order.name}
-                Email: {order.email}
-                Amount: Rs. {order.total_price}
-                Screenshot: {filename}
-
-                Please verify the payment and update the order status.
-                """
-                mail.send(msg)
-                
-                # Email to customer
-                msg_cust = Message(
-                    subject=f'Payment Screenshot Received - Order #{order.id}',
-                    sender='hafizmuhammadshah11@gmail.com',
-                    recipients=[order.email]
-                )
-                msg_cust.body = f"""
-                Dear {order.name},
-
-                We have received your payment screenshot for Order #{order.id}.
-
-                We will verify your payment and update the order status shortly.
-
-                Thank you for your patience.
-
-                Regards,
-                Pure Mustard Oil Team
-                """
-                mail.send(msg_cust)
-                
-            except Exception as e:
-                flash("Screenshot uploaded, but failed to send email.", "warning")
-                print(str(e))
+            # Email functionality disabled for Render deployment
             
             flash('Payment screenshot uploaded successfully! We will verify it shortly.', 'success')
             return redirect(url_for('customer_bp.order_confirmation', order_id=order.id))

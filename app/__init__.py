@@ -22,8 +22,13 @@ def init_mail(app):
 def create_app():
     app = Flask(__name__)
     
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://422483_moa:muhammad%40555@mysql-hafizmuhammadshah.alwaysdata.net/hafizmuhammadshah_moa'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://422483_moa:muhammad%40555@mysql-hafizmuhammadshah.alwaysdata.net/hafizmuhammadshah_moa?charset=utf8mb4&connect_timeout=60&read_timeout=60&write_timeout=60'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        'pool_pre_ping': True,
+        'pool_recycle': 300,
+        'connect_args': {'connect_timeout': 60}
+    }
     app.config['UPLOAD_FOLDER'] = 'app/static/uploads'
     app.config['SECRET_KEY'] = 'your_secret_key'
 
